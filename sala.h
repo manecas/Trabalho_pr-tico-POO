@@ -19,15 +19,15 @@ public:
 	void CC();
 
 	//
+	int ObterIntegridade()const;
 	bool Operada()const;
 	bool TemOxigenio() const;
 };
 
 class Propulsor : public Sala {
-
 public:
-	Propulsor();
-	~Propulsor();
+	Propulsor() { }
+	void Voar() { }
 };
 
 #endif

@@ -4,10 +4,12 @@
 #include "sala.h"
 
 class Nave {
+	string nome;
 	Sala *salas[3][5];
 public:
-	Nave();
+	Nave(string n);
 	~Nave();
+	void ConfigurarSala(int x, int y, Sala *sala);
 };
 
 #endif

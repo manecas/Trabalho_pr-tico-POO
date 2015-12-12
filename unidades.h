@@ -17,7 +17,6 @@ public:
 class Capitao : public Respira, public Unidades, public Reparador {
 public:
 	Capitao() : Respira(), Unidades(6), Reparador(1) { }
-	void Correr();
 };
 
 #endif
