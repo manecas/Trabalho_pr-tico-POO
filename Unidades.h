@@ -11,7 +11,7 @@ public:
 	void GanhaVida();
 };
 
-class Capitao : public Unidades {
+class Capitao : public Unidades, public Reparador {
 public:
 	Capitao();
 };

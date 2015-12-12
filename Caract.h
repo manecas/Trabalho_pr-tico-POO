@@ -8,4 +8,21 @@ public:
 	void Respirar();
 };
 
+class Reparador {
+	int x;
+public:
+	Reparador(int x): x(x) { }
+	~Reparador();
+
+	void Reparar();
+};
+
+class Combatente {
+	int x;
+public:
+	Combatente(int x) : x(x) { }
+	~Combatente();
+
+	void Combate();
+};
 #endif
