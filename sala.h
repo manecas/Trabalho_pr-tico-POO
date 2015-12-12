@@ -7,12 +7,14 @@ class Sala {
 	int integridade;
 	int oxigenio;
 	int saude;
+	string tipo;
 	vector<Unidades*> unidades;
 public:
-	Sala();
+	Sala(string t);
 	~Sala();
 	void Reparar();
 	void Danificar();
+	void RecebeOxigenio();
 	void UsaOxigenio();
 	void Fogo();
 	void Brecha();
@@ -22,12 +24,14 @@ public:
 	int ObterIntegridade()const;
 	bool Operada()const;
 	bool TemOxigenio() const;
+	vector<Unidades*> UnidadesNaSala();
+	virtual string TipoSala() const;
 };
 
 class Propulsor : public Sala {
 public:
-	Propulsor() { }
-	void Voar() { }
+	Propulsor() : Sala("Propulsor") { }
+	virtual string TipoSala() const;
 };
 
 #endif
