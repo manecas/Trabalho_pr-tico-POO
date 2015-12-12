@@ -2,8 +2,8 @@
 #include <vector>
 using std::vector;
 
-#include "Sala.h"
-#include "Unidades.h"
+#include "sala.h"
+#include "unidades.h"
 
 bool Sala::TemOxigenio() const
 {
