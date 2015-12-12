@@ -21,4 +21,5 @@ public:
 	Capitao() : Respira(), Unidades(6), Reparador(1) { }
 };
 
+
 #endif

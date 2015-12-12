@@ -26,12 +26,22 @@ public:
 	bool TemOxigenio() const;
 	vector<Unidades*> UnidadesNaSala();
 	virtual string TipoSala() const;
+	virtual int ObterForca() const;
 };
 
 class Propulsor : public Sala {
 public:
 	Propulsor() : Sala("Propulsor") { }
-	virtual string TipoSala() const;
+	string TipoSala() const;
 };
+
+class Escudo : public Sala {
+	int Forca;
+public:
+	Escudo() : Sala("Controlo de Escudo") { }
+	string TipoSala() const;
+	int ObterForca()const { return Forca; }
+};
+
 
 #endif

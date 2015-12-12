@@ -11,6 +11,7 @@ using std::string;
 
 Unidades::Unidades(int max) : MAX_PV(max), PV(max) { }
 
+
 void Unidades::GanhaVida()
 {
 }

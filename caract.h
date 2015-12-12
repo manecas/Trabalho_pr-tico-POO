@@ -23,4 +23,5 @@ public:
 
 	void Combate();
 };
+
 #endif
