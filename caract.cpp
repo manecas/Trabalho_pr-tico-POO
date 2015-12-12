@@ -6,6 +6,7 @@ void Reparador::Reparar()
 {
 }
 
+
 void Respira::Respirar()
 {
 }

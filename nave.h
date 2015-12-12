@@ -12,6 +12,8 @@ public:
 	void ConfigurarSala(int x, int y, Sala *sala);
 	int mPercorrer();
 	vector<Unidades*> UnidadesNaSala(int x, int y);
+	Sala *RetornaSala(int x, int y)const;
 };
+
 
 #endif

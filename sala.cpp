@@ -43,6 +43,10 @@ string Sala::TipoSala() const
 {
 	return tipo;
 }
+int Sala::ObterForca() const
+{
+	return 0;
+}
 //Sala auto-reparador - 5 dano
 //blob - 6 dano
 //capitão, membro da tripulação - 1
@@ -50,11 +54,20 @@ void Sala::Reparar()
 {
 
 }
+
+void Sala::Danificar()
+{
+}
 void Sala::UsaOxigenio()
 {
 	oxigenio--;
 }
 string Propulsor::TipoSala() const
+{
+	return Sala::TipoSala();
+}
+
+string Escudo::TipoSala() const
 {
 	return Sala::TipoSala();
 }

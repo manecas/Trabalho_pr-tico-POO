@@ -16,6 +16,7 @@ Nave::Nave(string n):nome(n)
 		}
 	}
 
+
 	//salas por defeito
 	salas[0][0] = new Propulsor;
 	salas[1][1] = new Sala("Sala das Maquinas");
@@ -51,6 +52,11 @@ int Nave::mPercorrer()
 vector<Unidades*> Nave::UnidadesNaSala(int x, int y)
 {
 	return salas[x][y]->UnidadesNaSala();
+}
+
+Sala *Nave::RetornaSala(int x, int y) const
+{
+	return salas[x][y];
 }
 
 
