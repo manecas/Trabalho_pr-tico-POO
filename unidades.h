@@ -8,17 +8,25 @@ class Unidades {
 	int PV;
 	int MAX_PV;
 	Sala *sala;
+	string nome;
 public:
-	Unidades(int max);
+	Unidades(string n, int max);
+	virtual ~Unidades() { }
 	void PerdeVida();
 	void GanhaVida();
 
 	void Mover();
+
+	virtual void Respirar() { }
+
+	string ObterNome() const;
 };
 
 class Capitao : public Respira, public Unidades, public Reparador {
 public:
-	Capitao() : Respira(), Unidades(6), Reparador(1) { }
+	Capitao() : Respira(), Unidades("Capitao", 6), Reparador(1) { }
+	virtual ~Capitao() { }
+	void Respirar() { Respira::Respirar(); }
 };
 
 #endif

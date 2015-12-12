@@ -15,11 +15,27 @@ using std::vector;
 
 void ChuvaMeteroritos(Nave& nave) {
 
-
-
 }
 
+
+
 int main(void) {
+
+
+
+
+
+	/*Unidades* b2 = new Capitao;
+	Capitao* d = dynamic_cast<Capitao*>(b2);
+	Capitao* c = (Capitao*)b2;
+	d->Respirar();
+	c->Respirar();
+	//http://en.cppreference.com/w/cpp/language/dynamic_cast */
+
+
+
+	
+
 
 	string nome, comando;
 	int dificuldade, m_percorridas = 0, p_evento = 0, t_turnos = 0;

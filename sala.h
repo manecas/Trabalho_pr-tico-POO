@@ -34,4 +34,11 @@ public:
 	virtual string TipoSala() const;
 };
 
+class Enfermaria : public Sala {
+public:
+	Enfermaria() : Sala("Enfermaria") { }
+	~Enfermaria() { }
+	void Curar(); // curar todos os tripulantes na sala
+};
+
 #endif

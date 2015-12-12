@@ -58,3 +58,15 @@ string Propulsor::TipoSala() const
 {
 	return Sala::TipoSala();
 }
+
+void Enfermaria::Curar()
+{
+	vector<Unidades*> unidades = UnidadesNaSala();
+	for (int u = 0; u != unidades.size(); u++) {
+		if (unidades[u]->ObterNome() == "Capitao" ||
+			unidades[u]->ObterNome() == "Tripulante" ||
+			unidades[u]->ObterNome() == "Robot") {
+			unidades[u]->GanhaVida();
+		}
+	}
+}
