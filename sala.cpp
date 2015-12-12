@@ -5,6 +5,26 @@ using std::vector;
 #include "sala.h"
 #include "unidades.h"
 
+Sala::Sala()
+{
+
+}
+
+Sala::~Sala()
+{
+
+}
+
+bool Sala::Operada() const
+{
+	const int dano = 100 - integridade;
+
+	if(dano == 0) //Falta coisas
+		return true;
+
+	return false;
+}
+
 bool Sala::TemOxigenio() const
 {
 	return (oxigenio > 0); 
