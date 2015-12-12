@@ -5,10 +5,15 @@ class Unidades {
 	int PV;
 	int MAX_PV;
 public:
-	Unidades(int MAX);
+	Unidades(int max);
 	~Unidades();
 	void PerdeVida();
 	void GanhaVida();
+};
+
+class Capitao : public Unidades {
+public:
+	Capitao();
 };
 
 #endif

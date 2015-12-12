@@ -1,11 +1,11 @@
 #ifndef CARACT_H
 #define CARACT_H
 
-class Respira: public Unidades{
+class Respira {
 public:
 	Respira();
 	~Respira();
-	void Respirar(Sala & sala);
+	void Respirar();
 };
 
 #endif
