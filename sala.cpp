@@ -19,12 +19,11 @@ bool Sala::Operada() const
 {
 	const int dano = 100 - integridade;
 
-	if(dano == 0) //Falta coisas
+	if (dano == 0) //Falta coisas
 		return true;
 
 	return false;
 }
-
 bool Sala::TemOxigenio() const
 {
 	return (oxigenio > 0); 
