@@ -12,7 +12,7 @@ bool Sala::TemOxigenio() const
 
 //Sala auto-reparador - 5 dano
 //blob - 6 dano
-//capit„o, membro da tripulaÁ„o - 1
+//capit√£o, membro da tripula√ß√£o - 1
 void Sala::Reparar()
 {
 
