@@ -19,6 +19,7 @@ public:
 	void CC();
 
 	//
+	bool Operada()const;
 	bool TemOxigenio() const;
 };
 
