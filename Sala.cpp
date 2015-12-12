@@ -1,29 +1,13 @@
-#include "Sala.h"
+#include <iostream>
 
-//Sala geral
-Sala::Sala() {
+#include "sala.h"
 
-}
-
-Sala::~Sala(){
-
-}
-
-//Sala propulsor
-
-void Reparar() {
-
-}
-
-void Danificar() {
-
-}
-
-void Sala::UsaOxigenio(){
-	oxigenio--;
-}
-
-bool Sala::TemOxigenio() const{
-
+bool Sala::TemOxigenio() const
+{
 	return (oxigenio > 0);
+}
+
+void Sala::UsaOxigenio()
+{
+	oxigenio--;
 }

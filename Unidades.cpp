@@ -1,5 +1,5 @@
-#include "Unidades.h"
+#include <iostream>
 
-Unidades::Unidades(int MAX): MAX_PV(MAX), PV(MAX){
+#include "unidades.h"
 
-}
+Unidades::Unidades(int max) : MAX_PV(max), PV(max) { }

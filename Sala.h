@@ -11,16 +11,19 @@ public:
 	void Reparar();
 	void Danificar();
 	void UsaOxigenio();
-	bool TemOxigenio() const;
 	void Fogo();
 	void Brecha();
 	void CC();
+
+	//
+	bool TemOxigenio() const;
 };
 
-class Propulsor: public Sala{
-	
+class Propulsor : public Sala {
+
 public:
-	//...
+	Propulsor();
+	~Propulsor();
 };
 
 #endif
