@@ -15,6 +15,11 @@ Sala::~Sala()
 
 }
 
+int Sala::ObterIntegridade() const
+{
+	return integridade;
+}
+
 bool Sala::Operada() const
 {
 	const int dano = 100 - integridade;
