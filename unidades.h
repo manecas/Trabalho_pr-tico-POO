@@ -12,6 +12,8 @@ public:
 	Unidades(int max);
 	void PerdeVida();
 	void GanhaVida();
+
+	void Mover();
 };
 
 class Capitao : public Respira, public Unidades, public Reparador {
