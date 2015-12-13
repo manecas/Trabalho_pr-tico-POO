@@ -1,17 +1,18 @@
 #include <iostream>
-#include <vector>
+#include <sstream>
 #include <string>
 
-using std::vector;
 using std::string;
+using std::ostringstream;
+using std::endl;
 
-#include "caract.h"
 #include "unidades.h"
-#include "sala.h"
+#include "sala.h" //se nao include, a variavel sala em sala->getAsString() é considerada incompleta
 
-Unidades::Unidades(int max) : MAX_PV(max), PV(max) { }
+string Unidades::getAsString() const {
 
-
-void Unidades::GanhaVida()
-{
+	ostringstream oss;
+	oss << "Nome:" << nome << " PV:" << PV
+		<< " Sala:" << endl;// << sala->getAsString() << endl;
+	return oss.str();
 }

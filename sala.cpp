@@ -1,23 +1,18 @@
 #include <iostream>
 #include <vector>
 #include <string>
-
+#include <sstream>
 
 using std::vector;
 using std::string;
+using std::ostringstream;
+using std::endl;
 
 #include "sala.h"
 #include "unidades.h"
 
-Sala::Sala(string t) : tipo(t)
-{
-	integridade = 100;
-	oxigenio = 100;
-}
-Sala::~Sala()
-{
 
-}
+/*
 int Sala::ObterIntegridade() const
 {
 	return integridade;
@@ -62,12 +57,33 @@ void Sala::UsaOxigenio()
 {
 	oxigenio--;
 }
-string Propulsor::TipoSala() const
+void Sala::Brecha()
 {
-	return Sala::TipoSala();
+}*/
+
+void Enfermaria::Curar()
+{
+	vector<Unidades*> unidades;
+	getUnidades(unidades);
+	for (int u = 0; u != unidades.size(); u++) {
+		if (unidades[u]->getNome() == "Capitao" ||
+			unidades[u]->getNome() == "Tripulante" ||
+			unidades[u]->getNome() == "Robot") {
+			//dar vida
+			unidades[u]->setPV(unidades[u]->getPV() + 1);
+		}
+	}
 }
 
-string Escudo::TipoSala() const
-{
-	return Sala::TipoSala();
+string Sala::getAsString() const {
+
+	ostringstream oss;
+	oss << "Tipo: " << tipo << " Integridade:" << integridade
+		<< " Oxigenio:" << oxigenio << endl;
+
+	for (int u = 0; u != unidades.size(); u++) {
+		oss << unidades[u]->getAsString();
+	}
+
+	return oss.str();
 }
