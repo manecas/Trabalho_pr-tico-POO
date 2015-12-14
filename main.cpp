@@ -86,7 +86,7 @@ Sala *SalaRandom(Nave& nave) {
 	return nave.getSala(l,c);
 }
 
-void ChuvaMeteroritos(Nave& nave) {
+bool ChuvaMeteroritos(Nave& nave) {
 
 	int N_meteoritos;
 	Sala* sala;
@@ -99,7 +99,6 @@ void ChuvaMeteroritos(Nave& nave) {
 		
 	if (nave.getSalaByTipo(RAIO_LASER) != nullptr) {
 		//acho que podes por o codigo de MeteoritosAposLaser aqui, nao é assim tao grande
-		//MeteoritosAposLaser(N_meteoritos);
 
 		for (int i = 0, x = N_meteoritos; i < x; i++)
 			if (rand() % 1 == 0)
@@ -117,12 +116,18 @@ void ChuvaMeteroritos(Nave& nave) {
 	else {
 
 		Sala* tmpSala = SalaRandom(nave);
-		tmpSala->setIntegridade(sala->getIntegridade() - 10 * N_meteoritos);
+		sala->setIntegridade(sala->getIntegridade() - 10 * N_meteoritos);
 		tmpSala->setBrecha(true);
 	}
+
+	if (sala->getIntegridade() <= 0)
+		return true;
+
+	return false;
 }
 
 void AtaquePiratas(Nave& nave) {
+
 
 
 }
@@ -138,7 +143,7 @@ void CampoPoCosmico(Nave& nave) {
 void definirTripulacao(Nave& nave) {
 
 	int tipo, x, y;
-	Unidades* unidade;
+	Unidades* unidade = new Unidades;
 	Sala* sala;
 	string charc;
 	while (1) {
@@ -215,6 +220,7 @@ int main(void) {
 	Sala* sala;
 	string nome, comando;
 	int dificuldade, mApercorrer, p_evento = 0, t_turnos = 0;
+	bool NaveDestruida = false;
 
 	cout << "Introduza um nome para a sua nave: " << endl;
 	getline(cin, nome);
@@ -235,8 +241,13 @@ int main(void) {
 	while (1) {
 		cout << mApercorrer << " milhas ate ao fim!" << endl;//assim nao sao necessario calculos aqui
 
-		if(mApercorrer <= 0){//e aqui
-			cout << "Fim da brincadeira!" << endl << "Voce ganhou" << endl;
+		if (mApercorrer <= 0) {//e aqui
+			cout << "Fim da brincadeira!" << endl << "Voce ganhou!" << endl;
+			break;
+		}
+
+		if (NaveDestruida) {
+			cout << "Uma sala foi destruida, perdeste o jogo!" << endl;
 			break;
 		}
 
@@ -321,7 +332,7 @@ int main(void) {
 			{
 			case 0:
 				//
-				ChuvaMeteroritos(nave);
+				NaveDestruida = ChuvaMeteroritos(nave);
 				break;
 			case 1:
 				//

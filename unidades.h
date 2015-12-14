@@ -4,6 +4,7 @@
 #define CAPITAO		"Capitao"
 #define MEMBRO		"Tripulante"
 #define ROBOT		"Robot"
+#define PIRATA		"Pirata"
 
 #include "caract.h"
 class Sala;
