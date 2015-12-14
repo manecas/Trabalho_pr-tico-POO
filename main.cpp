@@ -81,7 +81,7 @@ Sala *SalaRandom(Nave& nave) {
 		l = rand() % 3;
 		c = rand() % 5;
 
-	} while (nave.getSala(l, c) != nullptr);
+	} while (nave.getSala(l, c) == nullptr);
 
 	return nave.getSala(l,c);
 }
@@ -91,36 +91,34 @@ void ChuvaMeteroritos(Nave& nave) {
 	int N_meteoritos;
 	Sala* sala;
 	//ponte operada
-	if ( (sala = nave.getSalaByTipo(PONTE)) != nullptr) {
+	if ((sala = nave.getSalaByTipo(PONTE)) != nullptr) {
 
-		vector<Unidades*> unidades;
-		sala->getUnidades(unidades);
-		//esta a contar atacantes tanbém, mas depois corrige-se
-		if (unidades.size() > 0)	N_meteoritos = 4 + rand() % 4;
+		if (sala->isOperada())		N_meteoritos = 4 + rand() % 4;
 		else						N_meteoritos = 6 + rand() % 6;
 	}
 		
-	//if ( PonteOperada(nave) )		N_meteoritos = 4 + rand() % 4;
-	//else							N_meteoritos = 6 + rand() % 6;
-
-	//o codigo que tinhas dentro do if-else estava duplicado
 	if (nave.getSalaByTipo(RAIO_LASER) != nullptr) {
 		//acho que podes por o codigo de MeteoritosAposLaser aqui, nao é assim tao grande
-		MeteoritosAposLaser(N_meteoritos);
-		if (nave.getSalaByTipo(CONTROLO_ESCUDO) != nullptr) {
-			//if (EscudoOnOff(nave)) {
-			if ((sala = nave.getSalaByTipo(CONTROLO_ESCUDO)) != nullptr) {
-				Escudo *e = (Escudo*)sala; //como só a sala de escudo é que vai ter força, entao interessa mais fazer um cast que usar virtual na class sala
-				if (e->getForca() > 0) {
-					//nave.RetornaSala(1, 3)->Danificar();
-					//danificar nao estava definida e creio que pode ser subestituido por setIntegridade
-				}
-				else {
-					//nave.RetornaSala(1, 3)->Danificar();
-					//SalaRandom(nave)->Brecha();
-				}
-			}
-		}
+		//MeteoritosAposLaser(N_meteoritos);
+
+		for (int i = 0, x = N_meteoritos; i < x; i++)
+			if (rand() % 1 == 0)
+				N_meteoritos -= 1;
+
+	}
+
+	sala = nave.getSalaByTipo(CONTROLO_ESCUDO);
+	Escudo *e = (Escudo*)sala;
+
+	if (e->getForca() > 0) { //escudo ativo
+
+		sala->setIntegridade(sala->getIntegridade() - 10 * N_meteoritos);
+	}
+	else {
+
+		Sala* tmpSala = SalaRandom(nave);
+		tmpSala->setIntegridade(sala->getIntegridade() - 10 * N_meteoritos);
+		tmpSala->setBrecha(true);
 	}
 }
 
@@ -187,7 +185,7 @@ void definirTripulacao(Nave& nave) {
 				} while (1);
 
 				sala->addUnidade(unidade);
-				nave.configSala(x, y, sala);
+				//nave.configSala(x, y, sala);
 
 			}
 			//cout << unidade->getAsString().c_str();
@@ -291,6 +289,7 @@ int main(void) {
 			//fogo na sala tem 50% de probabilidade de causar 10 pontos de dano
 			//e 5% de probabilidade de pegar fogo a salas adjacentes
 			//probabilidade de sofrer 25% de dano por estar numa sala com c-circuito
+			//recuperar 5 pontos da sala de escudo (caso esteja danificada)
 
 
 			//(aqui os acontecimentos devem acontecer pela seguinte ordem)
@@ -298,7 +297,7 @@ int main(void) {
 			//2 - Salas
 			//3 – Xenomorfos
 			//4 – Inimigos
-			//5– Tripulação
+			//5 – Tripulação
 
 
 		//ponte operada
