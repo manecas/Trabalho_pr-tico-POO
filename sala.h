@@ -11,6 +11,8 @@ using std::vector;
 #define CONTROLO_ESCUDO	"Controlo de Escudo"
 #define PONTE			"Ponte" //qual é que é o nome mesmo?
 #define ENFERMARIA		"Enfermaria"
+#define SALA_MAQUINAS	"Sala das Maquinas"
+#define SUPORTE_VIDA	"Suporte de Vida"
 
 class Unidades;
 
@@ -45,6 +47,8 @@ public:
 
 	void	getUnidades(vector<Unidades*>& u) //para nao retornar o vector de forma abusiva
 								const { u = unidades; }
+
+	bool	isOperada()			const;
 
 	string	getAsString()		const;
 	/*

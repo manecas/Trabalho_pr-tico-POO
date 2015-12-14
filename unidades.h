@@ -1,6 +1,10 @@
 #ifndef UNIDADES_H
 #define UNIDADES_H
 
+#define CAPITAO		"Capitao"
+#define MEMBRO		"Tripulante"
+#define ROBOT		"Robot"
+
 #include "caract.h"
 class Sala;
 
@@ -21,6 +25,9 @@ public:
 	int		getPV()			const { return PV; }
 	Sala*	getSala()		const { return sala; }
 	string	getNome()		const { return nome; }
+
+	bool	isTripulante()	const;
+	bool	isInimigo()		const;
 
 
 	string	getAsString()	const;

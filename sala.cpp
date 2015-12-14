@@ -66,13 +66,25 @@ void Enfermaria::Curar()
 	vector<Unidades*> unidades;
 	getUnidades(unidades);
 	for (int u = 0; u != unidades.size(); u++) {
-		if (unidades[u]->getNome() == "Capitao" ||
-			unidades[u]->getNome() == "Tripulante" ||
-			unidades[u]->getNome() == "Robot") {
+		if (unidades[u]->isTripulante()) {
 			//dar vida
 			unidades[u]->setPV(unidades[u]->getPV() + 1);
 		}
 	}
+}
+
+bool Sala::isOperada() const {
+
+	if (!unidades.size())
+		return false;
+
+
+	for (int u = 0; u != unidades.size(); u++) {
+		if (unidades[u]->isInimigo())
+			return false;
+	}
+
+	return true;
 }
 
 string Sala::getAsString() const {
