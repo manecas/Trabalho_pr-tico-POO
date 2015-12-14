@@ -19,10 +19,10 @@ Nave::Nave(string n):nome(n)
 
 	//salas por defeito
 	salas[0][0] = new Propulsor;
-	salas[1][1] = new Sala("Sala das Maquinas");
-	salas[1][2] = new Sala("Suporte de Vida");
-	salas[1][3] = new Sala("Controlo de Escudo");
-	salas[1][4] = new Sala("Ponte");
+	salas[1][1] = new Sala(SALA_MAQUINAS);
+	salas[1][2] = new Sala(SUPORTE_VIDA);
+	salas[1][3] = new Sala(CONTROLO_ESCUDO);
+	salas[1][4] = new Sala(PONTE);
 	salas[2][0] = new Propulsor;
 }
 
