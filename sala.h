@@ -22,6 +22,7 @@ class Sala {
 	int saude;
 	string tipo;
 	vector<Unidades*> unidades;
+	//Escudo *e;
 
 	bool fogo;
 	bool brecha;
