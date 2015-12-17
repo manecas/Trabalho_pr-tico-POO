@@ -256,12 +256,9 @@ int main(void) {
 	vector<Unidades*> u;
 	string nome, comando;
 	int dificuldade, mApercorrer, p_evento = 0, t_turnos = 0;
-<<<<<<< HEAD
 	//
-=======
 	bool NaveDestruida = false;
 
->>>>>>> refs/remotes/origin/master
 	cout << "Introduza um nome para a sua nave: " << endl;
 	getline(cin, nome);
 	//
@@ -276,17 +273,20 @@ int main(void) {
 	mApercorrer = 4000 + 1000 * dificuldade;
 	std::srand((unsigned int)std::time(0));
 	while (1) {
-		cout << "Faltam " << mApercorrer << " milhas ate ao fim!" << endl;
-
-		if(mApercorrer <= 0){
-			cout << "Fim da brincadeira!" << endl << "Voce ganhou" << endl;
-			break;
-		}
-
 		if (NaveDestruida) {
 			cout << "Uma sala foi destruida, perdeste o jogo!" << endl;
 			break;
 		}
+		if (mApercorrer <= 0) {
+			cout << "Fim da brincadeira!" << endl << "Voce ganhou" << endl;
+			break;
+		}
+		nave.getAllUnidades(u);
+		if (!u.size()) {
+			cout << "Todas as unidades morreram, voce perdeu o jogo!" << endl;
+			break;
+		}
+		cout << "Faltam " << mApercorrer << " milhas ate ao fim!" << endl;
 
 		//Viagem acaba se não houverem tripulantes nenhuns na nave
 
