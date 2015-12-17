@@ -12,65 +12,59 @@ using std::endl;
 #include "unidades.h"
 
 
-/*
-int Sala::ObterIntegridade() const
-{
-	return integridade;
-}
-bool Sala::Operada() const
-{
-	const int dano = 100 - integridade;
-
-	if (dano == 0) //Falta coisas
-		return true;
-
-	return false;
-}
-bool Sala::TemOxigenio() const
-{
-	return (oxigenio > 0); 
-}
-vector<Unidades*> Sala::UnidadesNaSala()
-{
-	return unidades;
-}
-string Sala::TipoSala() const
-{
-	return tipo;
-}
-int Sala::ObterForca() const
-{
-	return 0;
-}
-//Sala auto-reparador - 5 dano
-//blob - 6 dano
-//capitão, membro da tripulação - 1
-void Sala::Reparar()
-{
-
-}
-
-void Sala::Danificar()
-{
-}
-void Sala::UsaOxigenio()
-{
-	oxigenio--;
-}
-void Sala::Brecha()
-{
-}*/
-
-void Enfermaria::Curar()
+void Enfermaria::curar()
 {
 	vector<Unidades*> unidades;
 	getUnidades(unidades);
 	for (int u = 0; u != unidades.size(); u++) {
-		if (unidades[u]->isTripulante()) {
-			//dar vida
-			unidades[u]->setPV(unidades[u]->getPV() + 1);
-		}
+		if (unidades[u]->isTripulacao())
+			unidades[u]->setPV(1);
 	}
+}
+
+Sala::~Sala() {
+
+	for (int x = 0; x != unidades.size(); x++)
+		delete unidades[x];
+
+	unidades.clear();
+}
+
+void Sala::setIntegridade(int i, bool d) {
+
+	if (d)
+		integridade = i;
+	else
+		integridade += i;
+
+	//alternativa (operadores ternários)
+	//(d) ? integridade = i : integridade += i;
+
+	if (integridade > 100)
+		integridade = 100;
+}
+
+void Sala::setOxigenio(int o, bool d) {
+
+	if (d)
+		oxigenio = o;
+	else
+		oxigenio += o;
+
+	//alternativa (operadores ternários)
+	//(d) ? oxigenio = o : oxigenio += o;
+
+	if (oxigenio > 100)
+		oxigenio = 100;
+
+	if (oxigenio < 0)
+		oxigenio = 0;
+}
+
+void Sala::addUnidade(Unidades * u) {
+
+	unidades.push_back(u);
+	u->setSala(*this); //*this para enviar o endereço
 }
 
 bool Sala::isOperada() const {

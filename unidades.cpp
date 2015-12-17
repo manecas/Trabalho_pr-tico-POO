@@ -9,20 +9,22 @@ using std::endl;
 #include "unidades.h"
 #include "sala.h" //se nao include, a variavel sala em sala->getAsString() é considerada incompleta
 
-bool Unidades::isTripulante() const {
+void Unidades::setPV(int pv, bool d) {
+	if (d)
+		PV = pv;
+	else
+		PV += PV;
 
-	if (nome == CAPITAO || nome == MEMBRO || nome == ROBOT)
-		return true;
+	//(d) ? PV = pv : PV += pv;
 
-	return false;
+	if (PV > MAX_PV)
+		PV = MAX_PV;
 }
 
-bool Unidades::isInimigo() const {
+void Unidades::setSala(Sala& s) {
 
-	if (!isTripulante())
-		return true;
-
-	return false;
+	//if(s != nullptr) //nao é preciso, ja que & nunca pode ser null
+	sala = &s;
 }
 
 string Unidades::getAsString() const {
