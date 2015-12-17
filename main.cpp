@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <ctime>
+#include <sstream>
 
 using std::cout;
 using std::endl;
@@ -13,45 +14,7 @@ using std::vector;
 #include "nave.h"
 #include "unidades.h"
 
-//inicio do turno
-
 //eventos
-/*bool PonteOperada(Nave& nave) {
-
-	for (int l = 0; l < 3; l++) {
-	for (int c = 0; c < 5; c++) {
-		if (nave.getSala(l, c)->getTipo() != "Ponte")
-			continue;
-
-		vector<Unidades*> unidades;
-		nave.getSala(l, c)->getUnidades(unidades);
-		if (unidades.size() > 0)
-			return true;
-
-	} }
-
-	return false;
-}
-bool TemRaioLaser(Nave& nave) {
-
-	for (int l = 0; l < 3; l++) {
-	for (int c = 0; c < 5; c++) {
-		if (nave.getSala(l, c)->getTipo() == "Raio Laser")
-			return true;
-	} }
-
-	return false;
-}
-bool TemEscudo(Nave& nave) {
-
-	for (int l = 0; l < 3; l++) {
-	for (int c = 0; c < 5; c++) {
-		if (nave.getSala(l, c)->getTipo() == "Controlo de Escudo")
-			return true;
-	} }
-
-	return false;
-}*/
 int MeteoritosAposLaser(int num) {
 
 	for (int i = 0; i < num; i++)
@@ -60,19 +23,7 @@ int MeteoritosAposLaser(int num) {
 
 	return num;
 }
-/*bool EscudoOnOff(Nave& nave){
 
-	for (int l = 0; l < 3; l++) {
-	for (int c = 0; c < 5; c++) {
-		if (nave.getSala(l, c)->getTipo() == "Controlo de Escudo") {
-			Escudo *e = (Escudo*)nave.getSala(l, c); //como só a sala de escudo é que vai ter força, entao interessa mais fazer um cast que usar virtual na class sala
-			if (e->getForca() > 0)
-				return true;
-		}
-	} }
-
-	return false;
-}*/
 Sala *SalaRandom(Nave& nave) {
 
 	int l, c;
@@ -91,11 +42,10 @@ void ChuvaMeteroritos(Nave& nave) {
 	int N_meteoritos;
 	Sala* sala;
 	//ponte operada
-	if ((sala = nave.getSalaByTipo(PONTE)) != nullptr) {
+	sala = nave.getSalaByTipo(PONTE);
 
-		if (sala->isOperada())		N_meteoritos = 4 + rand() % 4;
-		else						N_meteoritos = 6 + rand() % 6;
-	}
+	if (sala->isOperada())		N_meteoritos = 4 + rand() % 4;
+	else						N_meteoritos = 6 + rand() % 6;
 		
 	if (nave.getSalaByTipo(RAIO_LASER) != nullptr) {
 		//acho que podes por o codigo de MeteoritosAposLaser aqui, nao é assim tao grande
@@ -134,78 +84,162 @@ void AtaqueXenomorfo(Nave& nave) {
 void CampoPoCosmico(Nave& nave) {
 
 }
-
+//fim eventos
 void definirTripulacao(Nave& nave) {
 
-	int tipo, x, y;
-	Unidades* unidade;
 	Sala* sala;
-	string charc;
-	while (1) {
-		cout << "A sua nave tem " << nave.getTotalUnidades() << " tripulantes." << endl
-			<< "Pretende adicionar mais? (s/n)" << endl;
+	vector<Unidades*> u;
+	int tCapitao = 0, tRobot = 0;
+	nave.getAllUnidades(u);
+	//
+	if ((sala = nave.getSalaByTipo(ROBOTICA)) != nullptr) {
+		//
+		for (int a = 0; a != u.size(); a++) {
+			if (u[a]->getNome() == MEMBRO) {
+				delete u[a];
+				u[a] = new Robot;
+				tRobot = 1;
+				break;
+			}
+		}
+	}
+	if ((sala = nave.getSalaByTipo(ALUJAMENTOCAP)) != nullptr) {
+		//
+		for (int a = 0; a != u.size(); a++) {
+			if (u[a]->getNome() == MEMBRO) {
+				delete u[a];
+				u[a] = new Capitao;
+				tCapitao = 1;
+				break;
+			}
+		}
+	}
+	cout << "A sua nave tem " << u.size() << " tripulantes." << endl;
+	cout << "Unidades:" << endl;
+	if (tCapitao)
+		cout << "1 Capitao" << endl;
+	//
+	if (tRobot)
+		cout << "1 Robot" << endl;
+	//
+	cout << (u.size() - tCapitao - tRobot) << " Membro(s)" << endl;
+}
 
-		cin >> charc;
-		if (charc == "n")
-			break;
+void definirSalasAdicionais(Nave& nave) {
+	int salasPorDefinir = 6, salaAlterar[2], tBeliches = 0;
+	bool temAlujCap = false, temRobotica = false;
+	Sala* sala;
+	int idSalas[3][5] = {
+		{1,	2,	3,	4,	0},
+		{0,	5,	6,	7,	8},
+		{9,	10,	11,	12,	0}
+	};
+	/*para obter o x, y será*/
+	int posSalas[12][2] = {
+		{ 0, 0 },{ 0, 1 },{ 0, 2 },{ 0, 3 },
+		{ 1, 1 },{ 1, 2 },{ 1, 3 },{ 1, 4 },
+		{ 2, 0 },{ 2, 1 },{ 2, 2 },{ 2, 3 }
+	};
 
-		do {
-			cout << "Qual tipo deseja adicionar?" << endl
-				<< "1 - Capitao" << endl
-				<< "2 - Tripulante" << endl
-				<< "3 - (Sair sem adicionar)" << endl;
+	char* nomeSalas[9] = { 
+		PROPULSOR, BELICHES,
+		RAIO_LASER, AUTOREPARADOR,
+		SEGINTERNA,ENFERMARIA,
+		SALAARMAS, ALUJAMENTOCAP, ROBOTICA };
 
-			cin >> tipo;
+	do {
+		cout << "A(s) sala(s) ";
 
-			switch (tipo) {
+		for (int l = 0; l < 3; l++) {
+		for (int c = 0; c < 5; c++) {
+			//
+			if (nave.getSala(l, c) == nullptr) {
+				if (!idSalas[l][c]) continue;
+				cout << idSalas[l][c] << " ";
+			}
+		} }
+
+		cout << "ainda nao estao definidas!" << endl;
+		cout << "Voce tem disponivel as seguintes salas:" << endl;
+		for (int n = 0; n != 9; n++) {
+			if (temAlujCap && n == 7) continue;
+			if (temRobotica && n == 8) continue;
+			//
+			cout << n + 1 << " -> " << nomeSalas[n] << endl;
+		}
+
+		cout << "Introduza os dados no formato <posicao sala> <id modelo sala>" << endl;
+
+		cin >> salaAlterar[0] >> salaAlterar[1];
+		salaAlterar[0] --;
+
+		sala = nave.getSala(posSalas[salaAlterar[0]][0], posSalas[salaAlterar[0]][1]);
+		if (sala != nullptr) {
+			cout << "Essa sala ja esta definida!" << endl;
+		}
+		else {
+			switch (salaAlterar[1]) {
 			case 1:
-				unidade = new Capitao;
+				sala = new Propulsor;
 				break;
 			case 2:
-				unidade = new Membro;
+				sala = new Beliches;
+				tBeliches++;
 				break;
 			case 3:
+				//raio laser
 				break;
-			default:
-				tipo = -1;
-				cout << "Unidade invalida!" << endl;
+			case 4:
+				//auto reparador
+				break;
+			case 5:
+				//seguranca interna
+				break;
+			case 6:
+				sala = new Enfermaria;
+				break;
+			case 7:
+				//sala armas
+				break;
+			case 8:
+				//alujamento capitao
+				temAlujCap = true;
+				break;
+			case 9:
+				sala = new Robotica;
+				temRobotica = true;
 				break;
 			}
+		}
+		//e necessário condifgSala porque ainda nao foi nada definido
+		nave.configSala(posSalas[salaAlterar[0]][0], posSalas[salaAlterar[0]][1], sala);
 
-			if (tipo != 3) {
-				do {
-					cout << "Introduza a posicao no formato 'x y' da sala " <<
-						"em que pretende introduzir a unidade:" << endl;
-					cin >> x >> y;
+	} while (--salasPorDefinir > 0);
 
-					if ((sala = nave.getSala(x, y)) == nullptr)
-						cout << "Sala invalida!" << endl;
-					else break;
+	//adicionar tripulacao
+	for (int t = 0; t != 3 + tBeliches; t++) //ficam todos na ponte
+		nave.getSala(1, 4)->addUnidade(new Membro);
 
-				} while (1);
 
-				sala->addUnidade(unidade);
-				//nave.configSala(x, y, sala);
 
-			}
-			//cout << unidade->getAsString().c_str();
-			//cout << sala->getAsString().c_str();
-
-		} while (tipo == -1);
-
-	}
+	/*se quiseres testar a nave sem ter de definir salas bloqueia o resto do codigo e compila este
+	
+	nave.configSala(0, 1, new Propulsor);
+	nave.configSala(0, 2, new Beliches);
+	nave.configSala(0, 3, new Beliches);
+	nave.configSala(2, 1, new Robotica);
+	nave.configSala(2, 2, new Enfermaria);
+	nave.configSala(2, 3, new Propulsor);
+	
+	for (int t = 0; t != 3 + 2; t++)
+		nave.getSala(1, 4)->addUnidade(new Membro);*/
 }
 
 int main(void) {
-
-
-
 	/*
 	http://www.bogotobogo.com/cplusplus/upcasting_downcasting.php
-	*/
-
-
-	/*Unidades* b2 = new Capitao;
+	
+	Unidades* b2 = new Capitao;
 	Capitao* d = dynamic_cast<Capitao*>(b2);
 	Capitao* c = (Capitao*)b2;
 	d->Respirar();
@@ -213,29 +247,27 @@ int main(void) {
 	//http://en.cppreference.com/w/cpp/language/dynamic_cast */
 
 	Sala* sala;
+	vector<Unidades*> u;
 	string nome, comando;
 	int dificuldade, mApercorrer, p_evento = 0, t_turnos = 0;
-
+	//
 	cout << "Introduza um nome para a sua nave: " << endl;
 	getline(cin, nome);
-
+	//
 	cout << "Nivel de dificuldade da missao?" << endl;
 	cin >> dificuldade;
-
+	//
 	Nave nave(nome);
-
-	//preparar a viagem
-	//definir salas opcionais
-
-	definirTripulacao(nave); //definir tripulacao
-
-	cout << "Vamos dar inicio á viagem!" << endl;
-	mApercorrer = 4000 + 1000 * dificuldade;//mais simples ? (distancia até ao fim)
+	definirSalasAdicionais(nave);
+	definirTripulacao(nave);
+	//
+	cout << "Vamos dar inicio a viagem!" << endl;
+	mApercorrer = 4000 + 1000 * dificuldade;
 	std::srand((unsigned int)std::time(0));
 	while (1) {
-		cout << mApercorrer << " milhas ate ao fim!" << endl;//assim nao sao necessario calculos aqui
+		cout << "Faltam " << mApercorrer << " milhas ate ao fim!" << endl;
 
-		if(mApercorrer <= 0){//e aqui
+		if(mApercorrer <= 0){
 			cout << "Fim da brincadeira!" << endl << "Voce ganhou" << endl;
 			break;
 		}
@@ -245,8 +277,16 @@ int main(void) {
 
 
 		//Inicio da turno
-			//flamejantes
-			//repirar (unidade perde vida se estiver em sala com fogo)
+		nave.getAllUnidades(u);
+		//
+		for (int x = 0; x != u.size(); x++) {
+			//
+			if (u[x]->isRespira())//repirar
+				u[x]->getSala()->setOxigenio(-1);
+			//
+			if (u[x]->isFlamejante())//flamejantes
+				u[x]->getSala()->setOxigenio(-5);
+		}
 			
 
 
@@ -269,53 +309,122 @@ int main(void) {
 					<< "Terminar (nao inserir mais ordens)" << endl;
 			}
 			else if (!comando.find("mover")) {
-				char nomeUnidade[45], direcao[20];
-				std::sscanf(comando.c_str(), "%*s %s %s", nomeUnidade, direcao);
 
-				cout << nomeUnidade << "-" << direcao << endl;
+
+				string nomeUnidade, direcao;
+				std::stringstream s(comando);
+
+				//seguindo a logica que divisao por espacos e a primeira palavra e' o comando
+				//repete-se nomeUnidade, assim quando o nomeUnidade é usado segunda vez
+				//subestitui o primeiro valor
+				s >> nomeUnidade >> nomeUnidade >> direcao;
+
+
+				if (nomeUnidade.empty()) {
+					cout << "Voce nao introduziu o nome da unidade para mover!" << endl;
+					continue; //volta ao inicio do while sem executar o codigo daqui para baixo
+				}
+				if (direcao.empty()) {
+					cout << "Voce nao introduziu a direcao para mover!" << endl;
+					continue;
+				}
+
+				//pesquisar pela unidade referida
+
+				//verificar se o movimento é válido
 			}
 		}
-
-
-
-
 
 
 
 
 		//Final do turno
-			//adicionar oxigenio ás salas
+
+		//(aqui os acontecimentos devem acontecer pela seguinte ordem)
+		//1 – Efeitos ambientais (e.g.; Fogo, curto-circuito) 
+		//2 - Salas
+		//3 – Xenomorfos
+		//4 – Inimigos
+		//5 – Tripulação
+
+		//1 – Efeitos ambientais (e.g.; Fogo, curto-circuito) 
+		for (int l = 0; l < 3; l++) {
+		for (int c = 0; c < 5; c++) {
+			if ((sala = nave.getSala(l, c)) != nullptr) {
+
+
+				if (sala->getFogo()) {
+					if (rand() % 1 == 0)//fogo na sala tem 50% de probabilidade de causar 10 pontos de dano
+						sala->setIntegridade(-10);
+
+					//e 5% de probabilidade de pegar fogo a salas adjacentes
+					//if (rand() % 20 == 0)
+					//ou
+					//if (rand() % 100 < 5)
+					Sala* sala2;
+					if ((sala2 = nave.getSala(l, c + 1)) != nullptr)
+						if (rand() % 20 == 0) sala2->setFogo(true);
+					if ((sala2 = nave.getSala(l, c - 1)) != nullptr)
+						if (rand() % 20 == 0) sala2->setFogo(true);
+					if ((sala2 = nave.getSala(l + 1, c)) != nullptr)
+						if (rand() % 20 == 0) sala2->setFogo(true);
+					if ((sala2 = nave.getSala(l - 1, c)) != nullptr)
+						if (rand() % 20 == 0) sala2->setFogo(true);
+				}
+				if (sala->getCC()) {//25% de probabilidade de sofrer dano por estar numa sala com c-circuito
+					if (rand() % 4 == 0) {
+						vector<Unidades*> u;
+						sala->getUnidades(u);
+						for (int x = 0; x != u.size(); x++)
+							u[x]->setPV(-1);
+					}
+				}
+			}
+		} }
+
+
+		//2 - Salas
+		bool svida_operavel = false;
+		if (nave.getSalaByTipo(SUPORTE_VIDA)->getIntegridade() == 100) {
+			//se a sala suporte á vida nao estiver danificada 
+			//dá 2 de oxigenio a todas as salas
+			svida_operavel = true;
+		}
+		/*
+		-> alteranativa
+		bool svida_operavel = (nave.getSalaByTipo(SUPORTE_VIDA)->getIntegridade() == 100);
+		*/
+		for (int l = 0; l < 3; l++) {
+		for (int c = 0; c < 5; c++) {
+			if ((sala = nave.getSala(l, c)) != nullptr) {
+
+				if (svida_operavel && !sala->getBrecha())//adicionar oxigenio ás salas
+					sala->setOxigenio(2);
+					
+				
+			}
+		} }
+
+			
 			//recuperar escudo da sala de controlo de escudo
-			//fogo na sala tem 50% de probabilidade de causar 10 pontos de dano
-			//e 5% de probabilidade de pegar fogo a salas adjacentes
-			//probabilidade de sofrer 25% de dano por estar numa sala com c-circuito
 			//recuperar 5 pontos da sala de escudo (caso esteja danificada)
 
 
-			//(aqui os acontecimentos devem acontecer pela seguinte ordem)
-			//1 – Efeitos ambientais (e.g.; Fogo, curto-circuito) 
-			//2 - Salas
-			//3 – Xenomorfos
-			//4 – Inimigos
-			//5 – Tripulação
+			
 
 
-		//ponte operada
-		if ((sala = nave.getSalaByTipo(PONTE)) != nullptr) {
-			int tripulacao = 0;
-			vector<Unidades*> unidades;
-			sala->getUnidades(unidades);
-
-			for (int u = 0; u != unidades.size(); u++) {
-				//verificar se as unidades contêm a class tripulacao
-				//basta encontrar a primeira e o ciclo termina
-				//a sala é considerada operada
-			}
+		//tripulacao
+			//quando um tripulante está numa sala danificada e nao está em combate, repara dois pontos de dano
+			//combate o inimigo
+		if (nave.getSalaByTipo(SALA_MAQUINAS)->getIntegridade() == 100) {
+			//ponte operada e sala das máquinas sem dano, a nave avança
+			sala = nave.getSalaByTipo(PONTE);
+			if (sala->isOperada())
+				mApercorrer -= nave.getDistPercorrer();
 		}
-		mApercorrer -= nave.distPercorrer();
+
+
 		//Eventos
-
-
 		if (!t_turnos || t_turnos == p_evento) {
 			switch (rand() % 4)
 			{
