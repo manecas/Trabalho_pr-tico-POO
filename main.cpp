@@ -37,7 +37,7 @@ Sala *SalaRandom(Nave& nave) {
 	return nave.getSala(l,c);
 }
 
-void ChuvaMeteroritos(Nave& nave) {
+bool ChuvaMeteroritos(Nave& nave) {
 
 	int N_meteoritos;
 	Sala* sala;
@@ -67,9 +67,15 @@ void ChuvaMeteroritos(Nave& nave) {
 	else {
 
 		Sala* tmpSala = SalaRandom(nave);
-		tmpSala->setIntegridade(sala->getIntegridade() - 10 * N_meteoritos);
+		sala->setIntegridade(sala->getIntegridade() - 10 * N_meteoritos);
 		tmpSala->setBrecha(true);
 	}
+
+	if (sala->getIntegridade() >= 0)
+		return true;
+
+	return false;
+
 }
 
 void AtaquePiratas(Nave& nave) {
@@ -250,7 +256,12 @@ int main(void) {
 	vector<Unidades*> u;
 	string nome, comando;
 	int dificuldade, mApercorrer, p_evento = 0, t_turnos = 0;
+<<<<<<< HEAD
 	//
+=======
+	bool NaveDestruida = false;
+
+>>>>>>> refs/remotes/origin/master
 	cout << "Introduza um nome para a sua nave: " << endl;
 	getline(cin, nome);
 	//
@@ -272,8 +283,12 @@ int main(void) {
 			break;
 		}
 
+		if (NaveDestruida) {
+			cout << "Uma sala foi destruida, perdeste o jogo!" << endl;
+			break;
+		}
 
-
+		//Viagem acaba se não houverem tripulantes nenhuns na nave
 
 
 		//Inicio da turno
@@ -430,7 +445,7 @@ int main(void) {
 			{
 			case 0:
 				//
-				ChuvaMeteroritos(nave);
+				NaveDestruida = ChuvaMeteroritos(nave);
 				break;
 			case 1:
 				//
