@@ -42,6 +42,8 @@ public:
 	void	setBrecha(bool b)						{ brecha = b; }
 	void	setCC(bool c)							{ cc = c; }
 	void	addUnidade(Unidades* u);
+	void	removerUnidade(string n);
+	void	moverUnidade(string nome, Sala* sala);
 
 	int		getIntegridade()	const { return integridade; }
 	int		getOxigenio()		const { return oxigenio; }

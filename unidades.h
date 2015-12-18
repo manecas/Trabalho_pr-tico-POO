@@ -21,11 +21,12 @@ class Unidades {
 	string nome;
 public:
 	Unidades() { }
-	Unidades(string n, int max) : MAX_PV(max), PV(max), nome(n) { }
-	virtual ~Unidades() { }
+	Unidades(Unidades *u) : PV(u->PV), MAX_PV(u->PV), nome(u->nome), sala(nullptr) { }
+	Unidades(string n, int max) : MAX_PV(max), PV(max), nome(n), sala(nullptr) { }
+	virtual ~Unidades();
 	//
 	void	setPV(int pv, bool d = false);
-	void	setSala(Sala& s); //precisamos passar o endereço, nao o ponteiro
+	void	setSala(Sala* s);
 	//
 	int		getPV()					const { return PV; }
 	Sala*	getSala()				const { return sala; }
