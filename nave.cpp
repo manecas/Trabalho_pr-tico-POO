@@ -96,6 +96,30 @@ Sala * Nave::getSalaByTipo(string tipo) const {
 	return nullptr;
 }
 
+Sala * Nave::getSalaAdjacente(Sala* sala, char d) const {
+	int l, c;
+	for (l = 0 ; l < 3; l++) {
+		for (c = 0 ; c < 5; c++) {
+			//
+			if (salas[l][c] == sala) break;
+		}
+		if (salas[l][c] == sala) break;
+	}
+
+	switch (d) {
+	case 'n':
+		return salas[l - 1][c];
+	case 's':
+		return salas[l + 1][c];
+	case 'e':
+		return salas[l][c + 1];
+	case 'o':
+		return salas[l][c - 1];
+	}
+
+	return nullptr;
+}
+
 int Nave::getDistPercorrer() const {
 
 	int total = 0;

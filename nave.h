@@ -17,6 +17,7 @@ public:
 	int		getTotalUnidades()								const;
 	Sala*	getSala(int x, int y)							const;
 	Sala*	getSalaByTipo(string tipo)						const;
+	Sala*	getSalaAdjacente(Sala* sala, char d)			const;
 	int		getDistPercorrer()								const;
 };
 

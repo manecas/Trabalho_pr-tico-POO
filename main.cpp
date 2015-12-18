@@ -91,36 +91,20 @@ void CampoPoCosmico(Nave& nave) {
 
 }
 //fim eventos
-void definirTripulacao(Nave& nave) {
+void definirTripulacao(Nave& nave, int tbeliches) {
 
-	Sala* sala;
-	vector<Unidades*> u;
 	int tCapitao = 0, tRobot = 0;
-	nave.getAllUnidades(u);
-	//
-	if ((sala = nave.getSalaByTipo(ROBOTICA)) != nullptr) {
-		//
-		for (int a = 0; a != u.size(); a++) {
-			if (u[a]->getNome() == MEMBRO) {
-				delete u[a];
-				u[a] = new Robot;
-				tRobot = 1;
-				break;
-			}
-		}
+	if (nave.getSalaByTipo(ROBOTICA) != nullptr) {
+		Unidades* uni = new Robot;
+		nave.getSala(1, 4)->addUnidade(uni);
+		tRobot = 1;
 	}
-	if ((sala = nave.getSalaByTipo(ALUJAMENTOCAP)) != nullptr) {
-		//
-		for (int a = 0; a != u.size(); a++) {
-			if (u[a]->getNome() == MEMBRO) {
-				delete u[a];
-				u[a] = new Capitao;
-				tCapitao = 1;
-				break;
-			}
-		}
+	if (nave.getSalaByTipo(ALUJAMENTOCAP) != nullptr) {
+		Unidades* uni = new Capitao;
+		nave.getSala(1, 4)->addUnidade(uni);
+		tCapitao = 1;
 	}
-	cout << "A sua nave tem " << u.size() << " tripulantes." << endl;
+	cout << "A sua nave tem " << (3 + tbeliches) << " tripulantes." << endl;
 	cout << "Unidades:" << endl;
 	if (tCapitao)
 		cout << "1 Capitao" << endl;
@@ -128,11 +112,16 @@ void definirTripulacao(Nave& nave) {
 	if (tRobot)
 		cout << "1 Robot" << endl;
 	//
-	cout << (u.size() - tCapitao - tRobot) << " Membro(s)" << endl;
+	cout << ((3 + tbeliches) - tCapitao - tRobot) << " Membro(s)" << endl;
+
+	for (int t = 0; t != ((3 + tbeliches) - tCapitao - tRobot); t++) {
+		Unidades* uni = new Membro;
+		nave.getSala(1, 4)->addUnidade(uni);
+	}
 }
 
 void definirSalasAdicionais(Nave& nave) {
-	int salasPorDefinir = 6, salaAlterar[2], tBeliches = 0;
+	/*int salasPorDefinir = 6, salaAlterar[2], tBeliches = 0;
 	bool temAlujCap = false, temRobotica = false;
 	Sala* sala;
 	int idSalas[3][5] = {
@@ -140,7 +129,7 @@ void definirSalasAdicionais(Nave& nave) {
 		{0,	5,	6,	7,	8},
 		{9,	10,	11,	12,	0}
 	};
-	/*para obter o x, y será*/
+	//para obter o x, y será
 	int posSalas[12][2] = {
 		{ 0, 0 },{ 0, 1 },{ 0, 2 },{ 0, 3 },
 		{ 1, 1 },{ 1, 2 },{ 1, 3 },{ 1, 4 },
@@ -226,9 +215,10 @@ void definirSalasAdicionais(Nave& nave) {
 	for (int t = 0; t != 3 + tBeliches; t++) //ficam todos na ponte
 		nave.getSala(1, 4)->addUnidade(new Membro);
 
+*/
 
 
-	/*se quiseres testar a nave sem ter de definir salas bloqueia o resto do codigo e compila este
+	//se quiseres testar a nave sem ter de definir salas bloqueia o resto do codigo e compila este
 	
 	nave.configSala(0, 1, new Propulsor);
 	nave.configSala(0, 2, new Beliches);
@@ -237,11 +227,11 @@ void definirSalasAdicionais(Nave& nave) {
 	nave.configSala(2, 2, new Enfermaria);
 	nave.configSala(2, 3, new Propulsor);
 	
-	for (int t = 0; t != 3 + 2; t++)
-		nave.getSala(1, 4)->addUnidade(new Membro);*/
+
+	definirTripulacao(nave, 2);
 }
 
-int main(void) {
+int main() {
 	/*
 	http://www.bogotobogo.com/cplusplus/upcasting_downcasting.php
 	
@@ -251,6 +241,7 @@ int main(void) {
 	d->Respirar();
 	c->Respirar();
 	//http://en.cppreference.com/w/cpp/language/dynamic_cast */
+
 
 	Sala* sala;
 	vector<Unidades*> u;
@@ -267,12 +258,12 @@ int main(void) {
 	//
 	Nave nave(nome);
 	definirSalasAdicionais(nave);
-	definirTripulacao(nave);
 	//
 	cout << "Vamos dar inicio a viagem!" << endl;
 	mApercorrer = 4000 + 1000 * dificuldade;
 	std::srand((unsigned int)std::time(0));
 	while (1) {
+		u.clear();
 		if (NaveDestruida) {
 			cout << "Uma sala foi destruida, perdeste o jogo!" << endl;
 			break;
@@ -281,19 +272,15 @@ int main(void) {
 			cout << "Fim da brincadeira!" << endl << "Voce ganhou" << endl;
 			break;
 		}
+		//
 		nave.getAllUnidades(u);
 		if (!u.size()) {
 			cout << "Todas as unidades morreram, voce perdeu o jogo!" << endl;
 			break;
 		}
 		cout << "Faltam " << mApercorrer << " milhas ate ao fim!" << endl;
-
 		//Viagem acaba se não houverem tripulantes nenhuns na nave
-
-
 		//Inicio da turno
-		nave.getAllUnidades(u);
-		//
 		for (int x = 0; x != u.size(); x++) {
 			//
 			if (u[x]->isRespira())//repirar
@@ -302,30 +289,24 @@ int main(void) {
 			if (u[x]->isFlamejante())//flamejantes
 				u[x]->getSala()->setOxigenio(-5);
 		}
-			
-
-
-
-
-
 
 		//Fase de ordens
+		cout << "Introduza comando para nova ordem ('ajuda' para ver comandos): " << endl;
 		while (1) {
-			cout << "Introduza comando para nova ordem ('ajuda' para ver comandos):";
-			//cin.ignore();
 			getline(cin, comando);
+			if (comando.empty()) continue;
 			if (comando == "terminar") {
 				break;
 			}
 			else if (comando == "ajuda") {
-				cout << "Comandos disponiveis:" << endl
-					<< "Ajuda" << endl
-					<< "Mover <NomeUnidade> <Direcao>" << endl
-					<< "Terminar (nao inserir mais ordens)" << endl;
+				cout << endl << "Comandos disponiveis:" << endl
+					<< "ajuda" << endl
+					<< "mover <InicialNomeUnidade> <Direcao>" << endl
+					<< "terminar (nao inserir mais ordens)" << endl << endl;
 			}
 			else if (!comando.find("mover")) {
 
-
+				Unidades* encontrou = nullptr;
 				string nomeUnidade, direcao;
 				std::stringstream s(comando);
 
@@ -343,11 +324,54 @@ int main(void) {
 					cout << "Voce nao introduziu a direcao para mover!" << endl;
 					continue;
 				}
+				//verificar se unidade existe
+				//precisa ser alterado (se existirem 2 membros, move sempre o primeiro)
+				u.clear();
+				nave.getAllUnidades(u);
+				for (int s = 0; s != u.size(); s++) {
+					if (nomeUnidade == "c" || nomeUnidade == "C"
+						&& u[s]->getNome() == CAPITAO) {
+						//
+						encontrou = u[s];
+						break;
+					}
+					else if (nomeUnidade == "m" || nomeUnidade == "M"
+						&& u[s]->getNome() == MEMBRO) {
+						//
+						encontrou = u[s];
+						break;
+					}
+					else if (nomeUnidade == "r" || nomeUnidade == "R"
+						&& u[s]->getNome() == ROBOT) {
+						//
+						encontrou = u[s];
+						break;
+					}
 
-				//pesquisar pela unidade referida
-
-				//verificar se o movimento é válido
+				}
+				if (encontrou == nullptr) {
+					cout << "Unidade nao encontrada!" << endl;
+					continue;
+				}
+				//movimento
+				cout << "direcao " << direcao << endl;
+				if (direcao == "n" || direcao == "N"
+					|| direcao == "s" || direcao == "S"
+					|| direcao == "e" || direcao == "E"
+					|| direcao == "o" || direcao == "O") {
+					if ((sala = nave.getSalaAdjacente(encontrou->getSala(), (char)direcao[0])) != nullptr)
+						encontrou->getSala()->moverUnidade(encontrou->getNome(), sala);
+					else
+						cout << "Movimento invalido!" << endl;
+				}
 			}
+			else if (comando == "status") {
+				u.clear();
+				nave.getAllUnidades(u);
+				for (int x = 0; x != u.size(); x++)
+					cout << u[x]->getAsString();
+			}
+			cout << "Introduza comando para nova ordem ('ajuda' para ver comandos):" << endl;
 		}
 
 
@@ -405,10 +429,9 @@ int main(void) {
 			//dá 2 de oxigenio a todas as salas
 			svida_operavel = true;
 		}
-		/*
-		-> alteranativa
-		bool svida_operavel = (nave.getSalaByTipo(SUPORTE_VIDA)->getIntegridade() == 100);
-		*/
+		//	-> alteranativa
+		//bool svida_operavel = (nave.getSalaByTipo(SUPORTE_VIDA)->getIntegridade() == 100);
+		
 		for (int l = 0; l < 3; l++) {
 		for (int c = 0; c < 5; c++) {
 			if ((sala = nave.getSala(l, c)) != nullptr) {
@@ -469,6 +492,6 @@ int main(void) {
 	}
 
 
-
+	
 	return 0;
 }

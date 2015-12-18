@@ -64,7 +64,27 @@ void Sala::setOxigenio(int o, bool d) {
 void Sala::addUnidade(Unidades * u) {
 
 	unidades.push_back(u);
-	u->setSala(*this); //*this para enviar o endereço
+	u->setSala(this); //esquece o *this, this já é um ponteiro
+}
+
+void Sala::removerUnidade(string n) {
+	for (int x = 0; x != unidades.size(); x++) {
+		if (unidades[x]->getNome() == n) {
+			unidades.erase(unidades.begin() + x);
+			break;
+		}
+	}
+}
+
+void Sala::moverUnidade(string nome, Sala * sala) {
+	int x;
+	for (x = 0; x != unidades.size(); x++) {
+		if (unidades[x]->getNome() == nome)
+			break;
+	}
+	Unidades* abc = new Unidades(unidades[x]);
+	sala->addUnidade(abc);
+	unidades.erase(unidades.begin() + x);
 }
 
 bool Sala::isOperada() const {
@@ -87,9 +107,10 @@ string Sala::getAsString() const {
 	oss << "Tipo: " << tipo << " Integridade:" << integridade
 		<< " Oxigenio:" << oxigenio << endl;
 
-	for (int u = 0; u != unidades.size(); u++) {
+	/*for (int u = 0; u != unidades.size(); u++) {
 		oss << unidades[u]->getAsString();
 	}
+*/
 
 	return oss.str();
 }
