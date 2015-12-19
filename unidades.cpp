@@ -11,8 +11,8 @@ using std::endl;
 
 Unidades::~Unidades() {
 	//quando a unidade é destruida é necessário remove-la da sala!
-	//sala->removerUnidade(this);
-	std::cout << "Unidade " << nome << " destruida" << endl;
+	sala->removerUnidade(nome);
+	//std::cout << "Unidade " << nome << " destruida" << endl;
 }
 
 void Unidades::setPV(int pv, bool d) {
@@ -25,6 +25,9 @@ void Unidades::setPV(int pv, bool d) {
 
 	if (PV > MAX_PV)
 		PV = MAX_PV;
+
+	if (PV <= 0)
+		delete this;
 }
 
 void Unidades::setSala(Sala* s) {

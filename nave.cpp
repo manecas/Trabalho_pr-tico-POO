@@ -7,15 +7,15 @@ using std::string;
 
 #include "nave.h"
 
-Nave::Nave(string n):nome(n)
+Nave::Nave(string n, int dificuldade) : nome(n)
 {
+	distPercorrer = 4000 + 1000 * dificuldade;
 
 	for (int l = 0; l < 3; l++) {
 		for (int c = 0; c < 5; c++) {
 			salas[l][c] = nullptr;
 		}
 	}
-
 
 	//salas por defeito
 	salas[0][0] = new Propulsor;
@@ -24,6 +24,23 @@ Nave::Nave(string n):nome(n)
 	salas[1][3] = new Sala(CONTROLO_ESCUDO);
 	salas[1][4] = new Sala(PONTE);
 	salas[2][0] = new Propulsor;
+}
+
+void Nave::updateDistPercorrer() {
+	int total = 0;
+
+	for (int l = 0; l < 3; l++) {
+		for (int c = 0; c < 5; c++) {
+			//
+			if (salas[l][c] == nullptr) continue;
+			//
+			if (salas[l][c]->getTipo() == "Propulsor")
+				total += salas[l][c]->getIntegridade();
+			//
+		}
+	}
+
+	distPercorrer -= total;
 }
 
 void Nave::getUnidades(int x, int y, vector<Unidades*>& u) const {
@@ -121,18 +138,5 @@ Sala * Nave::getSalaAdjacente(Sala* sala, char d) const {
 }
 
 int Nave::getDistPercorrer() const {
-
-	int total = 0;
-
-	for (int l = 0; l < 3; l++) {
-	for (int c = 0; c < 5; c++) {
-		//
-		if (salas[l][c] == nullptr) continue;
-		//
-		if (salas[l][c]->getTipo() == "Propulsor")
-			total += salas[l][c]->getIntegridade();
-		//
-	} }
-
-	return total;
+	return distPercorrer;
 }
