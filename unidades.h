@@ -60,7 +60,7 @@ public:
 	~Capitao() { }
 	int isRespira()					{ return 1; }
 	int isExoesqueleto()			{ return 1; }
-	int isReparador()				{ return 1; }
+	int isReparador()				{ return 2; }
 	int isCombatente()				{ return 2; }
 	int isOperador()				{ return 1; }
 	int isTripulacao()				{ return 1; }
@@ -71,7 +71,7 @@ public:
 	Membro() : Unidades(MEMBRO, 5) { }
 	~Membro() { }
 	int isRespira()					{ return 1; }
-	int isReparador()				{ return 1; }
+	int isReparador()				{ return 2; }
 	int isCombatente()				{ return 1; }
 	int isOperador()				{ return 1; }
 	int isTripulacao()				{ return 1; }
