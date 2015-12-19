@@ -19,8 +19,8 @@ void Unidades::setPV(int pv, bool d) {
 	if (d)
 		PV = pv;
 	else
-		PV += PV;
-
+		PV += pv;
+	
 	//(d) ? PV = pv : PV += pv;
 
 	if (PV > MAX_PV)

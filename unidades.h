@@ -21,7 +21,6 @@ class Unidades {
 	string nome;
 public:
 	Unidades() { }
-	Unidades(Unidades *u) : PV(u->PV), MAX_PV(u->PV), nome(u->nome), sala(nullptr) { }
 	Unidades(string n, int max) : MAX_PV(max), PV(max), nome(n), sala(nullptr) { }
 	virtual ~Unidades();
 	//
@@ -88,33 +87,36 @@ public:
 
 //Inimigos
 
-class Pirata : Unidades {
+class Pirata : public Unidades {
 public:
 	Pirata() : Unidades(PIRATA, 4) { }
 	~Pirata() { }
+	int isRespira()					{ return 1; }
+	int isInimigo()					{ return 1; }
+	int isMove()					{ return 15; }
 };
 
 //xenomorfos
 
-class Geigermorfo : Unidades {
+class Geigermorfo : public Unidades {
 public:
 	Geigermorfo() : Unidades(GEIGERMORFO, 4) { }
 	~Geigermorfo() { }
 };
 
-class Casulo : Unidades {
+class Casulo : public Unidades {
 public:
 	Casulo() : Unidades(CASULO, 6) { }
 	~Casulo() { }
 };
 
-class Blob : Unidades {
+class Blob : public Unidades {
 public:
 	Blob() : Unidades(BLOB, 8) { }
 	~Blob() { }
 };
 
-class Mxy : Unidades {
+class Mxy : public Unidades {
 public:
 	Mxy() : Unidades(MXY, 8) { }
 	~Mxy() { }
