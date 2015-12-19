@@ -52,7 +52,6 @@ void faseDeOrdens(Nave& nave) {
 				<< "terminar (nao inserir mais ordens)" << endl << endl;
 		}
 		else if (!comando.find("mover")) {
-
 			Unidades* encontrou = nullptr;
 			string nomeUnidade, direcao;
 			std::stringstream s(comando);
@@ -61,7 +60,6 @@ void faseDeOrdens(Nave& nave) {
 			//repete-se nomeUnidade, assim quando o nomeUnidade é usado segunda vez
 			//subestitui o primeiro valor
 			s >> nomeUnidade >> nomeUnidade >> direcao;
-
 
 			if (nomeUnidade.empty()) {
 				cout << "Voce nao introduziu o nome da unidade para mover!" << endl;
@@ -76,19 +74,19 @@ void faseDeOrdens(Nave& nave) {
 			u.clear();
 			nave.getAllUnidades(u);
 			for (int s = 0; s != u.size(); s++) {
-				if (nomeUnidade == "c" || nomeUnidade == "C"
+				if ((nomeUnidade == "c" || nomeUnidade == "C")
 					&& u[s]->getNome() == CAPITAO) {
 					//
 					encontrou = u[s];
 					break;
 				}
-				else if (nomeUnidade == "m" || nomeUnidade == "M"
+				else if ((nomeUnidade == "m" || nomeUnidade == "M")
 					&& u[s]->getNome() == MEMBRO) {
 					//
 					encontrou = u[s];
 					break;
 				}
-				else if (nomeUnidade == "r" || nomeUnidade == "R"
+				else if ((nomeUnidade == "r" || nomeUnidade == "R")
 					&& u[s]->getNome() == ROBOT) {
 					//
 					encontrou = u[s];
@@ -187,13 +185,51 @@ void ftXenmorfos(Nave& nave) {
 }
 void ftInimigos(Nave& nave) {
 	//inimigos atacam tripulacao
+	Sala* sala;
+	vector<Unidades*> u;
+
+	vector<Unidades*> inimigos[3][5];
+	vector<Unidades*> tripOUxeno[3][5]; //inimigos (piratas) atacam tripulacao e xenomorfos
+	//obter inimigos e tripulantes em cada sala
+	for (int l = 0; l < 3; l++) {
+	for (int c = 0; c < 5; c++) {
+		//
+		if ((sala = nave.getSala(l, c)) == nullptr) continue;
+		u.clear();
+		sala->getUnidades(u);
+		//
+		for (int x = 0; x != u.size(); x++) {
+			if (u[x]->isTripulacao() || u[x]->isXenomorfo())	tripOUxeno[l][c].push_back(u[x]);
+			else												inimigos[l][c].push_back(u[x]);
+		}
+	} }
+	//cruzar informacao
+	for (int l = 0; l < 3; l++) {
+	for (int c = 0; c < 5; c++) {
+		//
+		if ((sala = nave.getSala(l, c)) == nullptr) continue;
+		for (unsigned int x = 0; x < inimigos[l][c].size(); x++) {
+			if (tripOUxeno[l][c].size() > 0) {
+				//nao é necessário verificar se e combatente (toda a tripulacao e combatente)
+				//se existirem inimigos escolhe um aleatorio para lutar
+				int a = rand() % tripOUxeno[l][c].size();
+				//provoca x dano no inimigo
+				tripOUxeno[l][c][a]->setPV(-inimigos[l][c][x]->isInimigo());
+				//
+				tripOUxeno[l][c].clear();
+			}
+			else {
+				sala->setIntegridade(-2);
+			}
+		}
+	} }
 }
 void ftTripulacao(Nave& nave) {
 	Sala* sala;
 	vector<Unidades*> u;
 
-	vector<Unidades*> inimigos[3][5] = { { { nullptr } } };
-	vector<Unidades*> tripulacao[3][5] = { { { nullptr } } };
+	vector<Unidades*> inimigos[3][5];
+	vector<Unidades*> tripulacao[3][5];
 
 	//quando um tripulante está numa sala danificada e nao está em combate, repara dois pontos de dano
 	//combate o inimigo
@@ -208,8 +244,9 @@ void ftTripulacao(Nave& nave) {
 	for (int l = 0; l < 3; l++) {
 	for (int c = 0; c < 5; c++) {
 		//
+		if ((sala = nave.getSala(l, c)) == nullptr) continue;
 		u.clear();
-		nave.getSala(l, c)->getUnidades(u);
+		sala->getUnidades(u);
 		//
 		for (int x = 0; x != u.size(); x++) {
 			if (u[x]->isTripulacao())	tripulacao[l][c].push_back(u[x]);
@@ -220,22 +257,25 @@ void ftTripulacao(Nave& nave) {
 	for (int l = 0; l < 3; l++) {
 	for (int c = 0; c < 5; c++) {
 		//
-		for (int x = 0; x != tripulacao[l][c].size(); x++) {
+		if ((sala = nave.getSala(l, c)) == nullptr) continue;
+		for (unsigned int x = 0; x < tripulacao[l][c].size(); x++) {
 			if (inimigos[l][c].size() > 0) {
 				//nao é necessário verificar se e combatente (toda a tripulacao e combatente)
 				//se existirem inimigos escolhe um aleatorio para lutar
 				int a = rand() % inimigos[l][c].size();
 				//provoca x dano no inimigo
-				inimigos[l][c][x]->setPV(-tripulacao[l][c][x]->isCombatente());
+				inimigos[l][c][a]->setPV(-tripulacao[l][c][x]->isCombatente());
 				//
 				inimigos[l][c].clear();
 			}
+			else {
+				//se nao ha inimigos nao estao em combante, logo reparam a sala
+				if (sala->getIntegridade() < 100)
+					sala->setIntegridade(tripulacao[l][c][x]->isReparador());
+				//se nao for reparador, como o robot, retorna 0, nao faz diferenca
+			}
 		}
 	} }
-
-
-	//calcular danos de combate (combate acontece aqui)
-	//reparar sala se nao estiver em combate
 }
 //eventos
 Sala *SalaRandom(Nave& nave) {
@@ -250,7 +290,7 @@ Sala *SalaRandom(Nave& nave) {
 
 	return nave.getSala(l, c);
 }
-bool ChuvaMeteroritos(Nave& nave) {
+void ChuvaMeteroritos(Nave& nave) {
 
 	int N_meteoritos;
 	Sala* sala;
@@ -279,15 +319,45 @@ bool ChuvaMeteroritos(Nave& nave) {
 		sala->setIntegridade(sala->getIntegridade() - 10 * N_meteoritos);
 		tmpSala->setBrecha(true);
 	}
-
-	if (sala->getIntegridade() <= 0)//bem que achei estranho a nave morrer logo no primeiro evento (tinhas >= 0)
-		return true;
-
-	return false;
-
 }
 void AtaquePiratas(Nave& nave) {
 
+	Sala* sala;
+	Escudo *e;
+	int danoPiratas;
+	sala = nave.getSalaByTipo(CONTROLO_ESCUDO);
+	e = (Escudo*)sala;
+	danoPiratas = 30 + rand() % 30;
+	if (danoPiratas - e->getForca() > 0) {
+		//se o escudo resistir ao ataque, só perde forca
+		e->setForca(-danoPiratas);
+	}
+	else {
+		//se a forca de escudo nao for suficiente para resistir ao ataque
+		//perde o excudo e causa um problema numa sala aleatoria
+		e->setForca(-danoPiratas);
+		sala = SalaRandom(nave);
+		switch (rand() % 3) {
+		case 0:
+			sala->setBrecha(true);
+			break;
+		case 1:
+			sala->setFogo(true);
+			break;
+		case 2:
+			sala->setCC(true);
+			break;
+		}
+	}
+	if (nave.getSalaByTipo(RAIO_LASER) == nullptr) {
+		//se nao houver uma sala raio laser, os piratas entram na nave
+		sala = SalaRandom(nave);
+		int p = 0;
+		while (p++ < 3 + rand() % 3) {
+			Unidades* pirata = new Pirata;
+			sala->addUnidade(pirata);
+		}
+	}
 }
 void AtaqueXenomorfo(Nave& nave) {
 

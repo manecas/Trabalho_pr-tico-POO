@@ -156,11 +156,9 @@ void definirSalasAdicionais(Nave& nave) {
 
 int main() {
 
-	Sala* sala;
 	vector<Unidades*> u;
 	string nome, comando;
 	int dificuldade, p_evento = 0, t_turnos = 0;
-	bool NaveDestruida = false;
 
 	cout << "Introduza um nome para a sua nave: " << endl;
 	getline(cin, nome);
@@ -175,7 +173,7 @@ int main() {
 	std::srand((unsigned int)std::time(0));
 	while (1) {
 		u.clear();
-		if (NaveDestruida) {
+		if (nave.isNaveDestruida()) {
 			cout << "Uma sala foi destruida, perdeste o jogo!" << endl;
 			break;
 		}
@@ -193,10 +191,8 @@ int main() {
 		//Viagem acaba se não houverem tripulantes nenhuns na nave
 		//Inicio da turno
 		inicioTurno(nave);
-
 		//Fase de ordens
 		faseDeOrdens(nave);
-
 		//Final do turno
 		ftEfeitosAmbientais(nave);
 		ftSalas(nave);
@@ -206,11 +202,12 @@ int main() {
 
 		//Eventos
 		if (!t_turnos || t_turnos == p_evento) {
-			switch (rand() % 4)
+			AtaquePiratas(nave);
+			/*switch (rand() % 4)
 			{
 			case 0:
 				//
-				NaveDestruida = ChuvaMeteroritos(nave);
+				ChuvaMeteroritos(nave);
 				break;
 			case 1:
 				//
@@ -224,11 +221,11 @@ int main() {
 				//
 				CampoPoCosmico(nave);
 				break;
-			}
+			}*/
 			//evento
 			cout << "Evento" << endl;
 
-			p_evento += 5 + std::rand() % 5;
+			p_evento += 5 + rand() % 5;
 		}
 		t_turnos++;
 	}

@@ -140,3 +140,15 @@ Sala * Nave::getSalaAdjacente(Sala* sala, char d) const {
 int Nave::getDistPercorrer() const {
 	return distPercorrer;
 }
+
+bool Nave::isNaveDestruida() const {
+
+	for (int l = 0; l < 3; l++) {
+	for (int c = 0; c < 5; c++) {
+		//
+		if (salas[l][c] == nullptr) continue;
+		if (salas[l][c]->getIntegridade() <= 0)
+			return true;
+	} }
+	return false;
+}

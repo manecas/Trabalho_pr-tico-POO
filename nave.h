@@ -21,6 +21,7 @@ public:
 	Sala*	getSalaByTipo(string tipo)						const;
 	Sala*	getSalaAdjacente(Sala* sala, char d)			const;
 	int		getDistPercorrer()								const;
+	bool	isNaveDestruida()								const;
 };
 
 

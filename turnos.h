@@ -12,7 +12,7 @@ void ftInimigos(Nave& nave);
 void ftTripulacao(Nave& nave);
 
 Sala *SalaRandom(Nave& nave);
-bool ChuvaMeteroritos(Nave& nave);
+void ChuvaMeteroritos(Nave& nave);
 void AtaquePiratas(Nave& nave);
 void AtaqueXenomorfo(Nave& nave);
 void CampoPoCosmico(Nave& nave);

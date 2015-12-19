@@ -11,17 +11,6 @@ using std::endl;
 #include "sala.h"
 #include "unidades.h"
 
-
-void Enfermaria::curar()
-{
-	vector<Unidades*> unidades;
-	getUnidades(unidades);
-	for (int u = 0; u != unidades.size(); u++) {
-		if (unidades[u]->isTripulacao())
-			unidades[u]->setPV(1);
-	}
-}
-
 Sala::~Sala() {
 
 	for (int x = 0; x != unidades.size(); x++)
@@ -82,8 +71,7 @@ void Sala::moverUnidade(string nome, Sala * sala) {
 		if (unidades[x]->getNome() == nome)
 			break;
 	}
-	Unidades* abc = new Unidades(unidades[x]);
-	sala->addUnidade(abc);
+	sala->addUnidade(unidades[x]);
 	unidades.erase(unidades.begin() + x);
 }
 
@@ -94,7 +82,7 @@ bool Sala::isOperada() const {
 
 
 	for (int u = 0; u != unidades.size(); u++) {
-		if (unidades[u]->isInimigo())
+		if (!unidades[u]->isTripulacao())
 			return false;
 	}
 
@@ -113,4 +101,18 @@ string Sala::getAsString() const {
 */
 
 	return oss.str();
+}
+
+void Escudo::setForca(int f, bool d) {
+
+	if (d)
+		Forca = f;
+	else
+		Forca += f;
+
+	if (Forca > 100)
+		Forca = 100;
+
+	if (Forca < 0)
+		Forca = 0;
 }

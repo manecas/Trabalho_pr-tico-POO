@@ -65,8 +65,8 @@ class Escudo : public Sala {
 	//vai ser necessário outra variavel para salvar a forca, temporariamente, enquanto o escudo for desativado por a sala estar danificada!
 public:
 	Escudo() : Sala(CONTROLO_ESCUDO) { }
-
-	int		getForca()	const { return Forca; }
+	void	setForca(int f, bool d = false);
+	int		getForca() const { return Forca; }
 };
 
 class Propulsor : public Sala {
@@ -86,7 +86,6 @@ class Enfermaria : public Sala {
 public:
 	Enfermaria() : Sala(ENFERMARIA) { }
 	~Enfermaria() { }
-	void curar();
 };
 //sala armas
 //alujamento capitao
