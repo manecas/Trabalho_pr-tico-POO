@@ -9,26 +9,41 @@ using std::endl;
 #include "unidades.h"
 #include "sala.h" //se nao include, a variavel sala em sala->getAsString() é considerada incompleta
 
-bool Unidades::isTripulante() const {
-
-	if (nome == CAPITAO || nome == MEMBRO || nome == ROBOT)
-		return true;
-
-	return false;
+Unidades::~Unidades() {
+	//quando a unidade é destruida é necessário remove-la da sala!
+	sala->removerUnidade(nome);
+	//std::cout << "Unidade " << nome << " destruida" << endl;
 }
 
-bool Unidades::isInimigo() const {
+void Unidades::setPV(int pv, bool d) {
+	if (d)
+		PV = pv;
+	else
+		PV += pv;
+	
+	//(d) ? PV = pv : PV += pv;
 
-	if (!isTripulante())
-		return true;
+	if (PV > MAX_PV)
+		PV = MAX_PV;
 
-	return false;
+	if (PV <= 0)
+		delete this;
+}
+
+void Unidades::setSala(Sala* s) {
+
+	if(s != nullptr)
+		sala = s;
 }
 
 string Unidades::getAsString() const {
 
 	ostringstream oss;
-	oss << "Nome:" << nome << " PV:" << PV
-		<< " Sala:" << endl;// << sala->getAsString() << endl;
+	if (sala == nullptr)
+		oss << "shit" << endl;
+	else {
+		oss << "Nome:" << nome << " PV:" << PV
+			<< " Sala:" << sala->getAsString();
+	}
 	return oss.str();
 }

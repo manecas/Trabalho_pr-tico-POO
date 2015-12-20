@@ -7,15 +7,15 @@ using std::string;
 
 #include "nave.h"
 
-Nave::Nave(string n):nome(n)
+Nave::Nave(string n, int dificuldade) : nome(n)
 {
+	distPercorrer = 4000 + 1000 * dificuldade;
 
 	for (int l = 0; l < 3; l++) {
 		for (int c = 0; c < 5; c++) {
 			salas[l][c] = nullptr;
 		}
 	}
-
 
 	//salas por defeito
 	salas[0][0] = new Propulsor;
@@ -26,6 +26,47 @@ Nave::Nave(string n):nome(n)
 	salas[2][0] = new Propulsor;
 }
 
+void Nave::updateDistPercorrer() {
+	int total = 0;
+
+	for (int l = 0; l < 3; l++) {
+		for (int c = 0; c < 5; c++) {
+			//
+			if (salas[l][c] == nullptr) continue;
+			//
+			if (salas[l][c]->getTipo() == "Propulsor")
+				total += salas[l][c]->getIntegridade();
+			//
+		}
+	}
+
+	distPercorrer -= total;
+}
+
+void Nave::getUnidades(int x, int y, vector<Unidades*>& u) const {
+
+	salas[x][y]->getUnidades(u);
+}
+
+void Nave::getAllUnidades(vector<Unidades*>& u) const {
+
+	vector<Unidades*> u1;
+	for (int l = 0; l < 3; l++) {
+	for (int c = 0; c < 5; c++) {
+		//
+		if (salas[l][c] == nullptr)
+			continue;
+		//
+		salas[l][c]->getUnidades(u1);
+		if (!u1.size())
+			continue;
+		//
+		for (int x = 0; x != u1.size(); x++)
+			u.push_back(u1[x]);
+		//
+	} }
+}
+
 int Nave::getTotalUnidades() const {
 
 	int total = 0;
@@ -33,9 +74,11 @@ int Nave::getTotalUnidades() const {
 
 	for (int l = 0; l < 3; l++) {
 	for (int c = 0; c < 5; c++) {
-		if (salas[l][c] == nullptr) continue; //temporario
+		//
+		if (salas[l][c] == nullptr) continue;
+		//
 		salas[l][c]->getUnidades(u);
-		total += u.size(); //se for 0 simplesmente adiciona zero
+		total += u.size();
 	} }
 
 	/*Sala *s;
@@ -48,27 +91,64 @@ int Nave::getTotalUnidades() const {
 	return total;
 }
 
+Sala * Nave::getSala(int x, int y) const {
+
+	if(x >= 0 && x < 3 && y >= 0 && y < 5)
+		return salas[x][y];
+
+	return nullptr;
+}
+
 Sala * Nave::getSalaByTipo(string tipo) const {
 
 	for (int l = 0; l < 3; l++) {
 	for (int c = 0; c < 5; c++) {
-		if (salas[l][c] == nullptr) continue;//temporario
+		//
+		if (salas[l][c] == nullptr) continue;
+		//
 		if (salas[l][c]->getTipo() == tipo)
 			return salas[l][c];
+		//
 	} }
 	return nullptr;
 }
 
-int Nave::distPercorrer() const {
+Sala * Nave::getSalaAdjacente(Sala* sala, char d) const {
+	int l, c;
+	for (l = 0 ; l < 3; l++) {
+		for (c = 0 ; c < 5; c++) {
+			//
+			if (salas[l][c] == sala) break;
+		}
+		if (salas[l][c] == sala) break;
+	}
 
-	int total = 0;
+	switch (d) {
+	case 'n':
+		return salas[l - 1][c];
+	case 's':
+		return salas[l + 1][c];
+	case 'e':
+		return salas[l][c + 1];
+	case 'o':
+		return salas[l][c - 1];
+	}
+
+	return nullptr;
+}
+
+int Nave::getDistPercorrer() const {
+	return distPercorrer;
+}
+
+bool Nave::isNaveDestruida() const {
 
 	for (int l = 0; l < 3; l++) {
 	for (int c = 0; c < 5; c++) {
-		if (salas[l][c] == nullptr) continue;//temporario
-		if (salas[l][c]->getTipo() == "Propulsor")
-			total += salas[l][c]->getIntegridade();
+		//
+		if (salas[l][c] == nullptr) continue;
+		if (salas[l][c]->getIntegridade() <= 0)
+			return true;
 	} }
-
-	return total;
+	return false;
 }

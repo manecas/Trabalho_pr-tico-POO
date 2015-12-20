@@ -11,66 +11,68 @@ using std::endl;
 #include "sala.h"
 #include "unidades.h"
 
+Sala::~Sala() {
 
-/*
-int Sala::ObterIntegridade() const
-{
-	return integridade;
-}
-bool Sala::Operada() const
-{
-	const int dano = 100 - integridade;
+	for (int x = 0; x != unidades.size(); x++)
+		delete unidades[x];
 
-	if (dano == 0) //Falta coisas
-		return true;
-
-	return false;
-}
-bool Sala::TemOxigenio() const
-{
-	return (oxigenio > 0); 
-}
-vector<Unidades*> Sala::UnidadesNaSala()
-{
-	return unidades;
-}
-string Sala::TipoSala() const
-{
-	return tipo;
-}
-int Sala::ObterForca() const
-{
-	return 0;
-}
-//Sala auto-reparador - 5 dano
-//blob - 6 dano
-//capitão, membro da tripulação - 1
-void Sala::Reparar()
-{
-
+	unidades.clear();
 }
 
-void Sala::Danificar()
-{
-}
-void Sala::UsaOxigenio()
-{
-	oxigenio--;
-}
-void Sala::Brecha()
-{
-}*/
+void Sala::setIntegridade(int i, bool d) {
 
-void Enfermaria::Curar()
-{
-	vector<Unidades*> unidades;
-	getUnidades(unidades);
-	for (int u = 0; u != unidades.size(); u++) {
-		if (unidades[u]->isTripulante()) {
-			//dar vida
-			unidades[u]->setPV(unidades[u]->getPV() + 1);
+	if (d)
+		integridade = i;
+	else
+		integridade += i;
+
+	//alternativa (operadores ternários)
+	//(d) ? integridade = i : integridade += i;
+
+	if (integridade > 100)
+		integridade = 100;
+}
+
+void Sala::setOxigenio(int o, bool d) {
+
+	if (d)
+		oxigenio = o;
+	else
+		oxigenio += o;
+
+	//alternativa (operadores ternários)
+	//(d) ? oxigenio = o : oxigenio += o;
+
+	if (oxigenio > 100)
+		oxigenio = 100;
+
+	if (oxigenio < 0)
+		oxigenio = 0;
+}
+
+void Sala::addUnidade(Unidades * u) {
+
+	unidades.push_back(u);
+	u->setSala(this); //esquece o *this, this já é um ponteiro
+}
+
+void Sala::removerUnidade(string n) {
+	for (int x = 0; x != unidades.size(); x++) {
+		if (unidades[x]->getNome() == n) {
+			unidades.erase(unidades.begin() + x);
+			break;
 		}
 	}
+}
+
+void Sala::moverUnidade(string nome, Sala * sala) {
+	int x;
+	for (x = 0; x != unidades.size(); x++) {
+		if (unidades[x]->getNome() == nome)
+			break;
+	}
+	sala->addUnidade(unidades[x]);
+	unidades.erase(unidades.begin() + x);
 }
 
 bool Sala::isOperada() const {
@@ -80,7 +82,7 @@ bool Sala::isOperada() const {
 
 
 	for (int u = 0; u != unidades.size(); u++) {
-		if (unidades[u]->isInimigo())
+		if (!unidades[u]->isTripulacao())
 			return false;
 	}
 
@@ -93,9 +95,24 @@ string Sala::getAsString() const {
 	oss << "Tipo: " << tipo << " Integridade:" << integridade
 		<< " Oxigenio:" << oxigenio << endl;
 
-	for (int u = 0; u != unidades.size(); u++) {
+	/*for (int u = 0; u != unidades.size(); u++) {
 		oss << unidades[u]->getAsString();
 	}
+*/
 
 	return oss.str();
+}
+
+void Escudo::setForca(int f, bool d) {
+
+	if (d)
+		Forca = f;
+	else
+		Forca += f;
+
+	if (Forca > 100)
+		Forca = 100;
+
+	if (Forca < 0)
+		Forca = 0;
 }
