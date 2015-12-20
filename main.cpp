@@ -251,7 +251,7 @@ int main(void) {
 			break;
 		}
 
-		//Destruir nave caso não hajam tripulantes na nave
+
 
 
 
