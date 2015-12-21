@@ -48,7 +48,7 @@ void Nave::getUnidades(int x, int y, vector<Unidades*>& u) const {
 	salas[x][y]->getUnidades(u);
 }
 
-void Nave::getAllUnidades(vector<Unidades*>& u, bool d = false) const {
+void Nave::getAllUnidades(vector<Unidades*>& u, bool d) const {
 
 	vector<Unidades*> u1;
 	for (int l = 0; l < 3; l++) {
