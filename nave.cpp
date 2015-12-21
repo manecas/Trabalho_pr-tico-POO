@@ -48,7 +48,7 @@ void Nave::getUnidades(int x, int y, vector<Unidades*>& u) const {
 	salas[x][y]->getUnidades(u);
 }
 
-void Nave::getAllUnidades(vector<Unidades*>& u) const {
+void Nave::getAllUnidades(vector<Unidades*>& u, bool d = false) const {
 
 	vector<Unidades*> u1;
 	for (int l = 0; l < 3; l++) {
@@ -62,7 +62,13 @@ void Nave::getAllUnidades(vector<Unidades*>& u) const {
 			continue;
 		//
 		for (int x = 0; x != u1.size(); x++)
-			u.push_back(u1[x]);
+			if (!d) {
+				u.push_back(u1[x]);
+			}
+			else{
+				if(u1[x]->isTripulacao())
+					u.push_back(u1[x]);
+			}
 		//
 	} }
 }
