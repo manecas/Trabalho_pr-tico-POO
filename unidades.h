@@ -24,6 +24,8 @@ class Unidades {
 	int armado;
 	Sala *sala;
 	string nome;
+
+
 public:
 	Unidades() { }
 	Unidades(string n, int max) : MAX_PV(max), PV(max), nome(n), sala(nullptr), armado(0) { }
