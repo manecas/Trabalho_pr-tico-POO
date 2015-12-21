@@ -21,15 +21,17 @@ class Sala;
 class Unidades {
 	int PV;
 	int MAX_PV;
+	int armado;
 	Sala *sala;
 	string nome;
 public:
 	Unidades() { }
-	Unidades(string n, int max) : MAX_PV(max), PV(max), nome(n), sala(nullptr) { }
+	Unidades(string n, int max) : MAX_PV(max), PV(max), nome(n), sala(nullptr), armado(0) { }
 	virtual ~Unidades();
 	//
 	void	setPV(int pv, bool d = false);
 	void	setSala(Sala* s);
+	void	setArmado(int a)		{ armado = a; }
 	//
 	int		getPV()					const { return PV; }
 	Sala*	getSala()				const { return sala; }
@@ -54,7 +56,7 @@ public:
 	virtual int isTripulacao()		{ return 0; }
 	virtual int isInimigo()			{ return 0; }
 	virtual int isMove()			{ return 0; }
-	virtual int isArmado()			{ return 0; }
+	virtual int isArmado()			{ return armado; }
 };
 
 class Capitao : public Unidades {

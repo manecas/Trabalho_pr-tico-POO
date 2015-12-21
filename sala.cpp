@@ -116,3 +116,14 @@ void Escudo::setForca(int f, bool d) {
 	if (Forca < 0)
 		Forca = 0;
 }
+
+void Escudo::setEscudo(bool ativo) {
+
+	if (ativo) {
+		Forca = tmpForca;
+	}
+	else {
+		tmpForca = Forca;
+		Forca = 0;
+	}
+}

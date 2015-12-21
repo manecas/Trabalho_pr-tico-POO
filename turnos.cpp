@@ -17,6 +17,7 @@ using std::string;
 void inicioTurno(Nave& nave) {
 	vector<Unidades*> u;
 	Sala* sala;
+	int tmpVal;
 	nave.getAllUnidades(u);
 	for (int x = 0; x != u.size(); x++) {
 		//
@@ -30,6 +31,30 @@ void inicioTurno(Nave& nave) {
 		//
 		if (u[x]->isFlamejante()) //flamejantes
 			u[x]->getSala()->setOxigenio(-5);
+		
+		if ((tmpVal = u[x]->isMove()) != 0) {
+			if (rand() % 100 < tmpVal) {
+				Sala* novaSala;
+				do {
+					switch (rand() % 4) {
+					case 0://n
+						novaSala = nave.getSalaAdjacente(sala, 'n');
+						break;
+					case 1://s
+						novaSala = nave.getSalaAdjacente(sala, 's');
+						break;
+					case 2://e
+						novaSala = nave.getSalaAdjacente(sala, 'e');
+						break;
+					case 3://o
+						novaSala = nave.getSalaAdjacente(sala, 'o');
+						break;
+					}
+				} while (novaSala == nullptr);
+				//
+				sala->moverUnidade(u[x]->getNome(), novaSala);
+			}
+		}
 	}
 }
 //fase de ordens
@@ -155,6 +180,7 @@ void ftEfeitosAmbientais(Nave& nave) {
 }
 void ftSalas(Nave& nave) {
 	Sala* sala;
+	vector<Unidades*> u;
 	bool svida_operavel = false;
 	if (nave.getSalaByTipo(SUPORTE_VIDA)->getIntegridade() == 100) {
 		//se a sala suporte á vida nao estiver danificada 
@@ -165,16 +191,30 @@ void ftSalas(Nave& nave) {
 	//bool svida_operavel = (nave.getSalaByTipo(SUPORTE_VIDA)->getIntegridade() == 100);
 
 	for (int l = 0; l < 3; l++) {
-		for (int c = 0; c < 5; c++) {
-			if ((sala = nave.getSala(l, c)) != nullptr) {
+	for (int c = 0; c < 5; c++) {
+		if ((sala = nave.getSala(l, c)) != nullptr) {
 
-				if (svida_operavel && !sala->getBrecha())//adicionar oxigenio ás salas
-					sala->setOxigenio(2);
+			if (svida_operavel && !sala->getBrecha())//adicionar oxigenio ás salas
+				sala->setOxigenio(2);
 
-
-			}
+		}
+	} }
+	sala = nave.getSalaByTipo(ENFERMARIA);
+	if (sala->getIntegridade() == 100) {
+		sala->getUnidades(u);
+		for (int x = 0; x != u.size(); x++) {
+			if (u[x]->isTripulacao())
+				u[x]->setPV(1);
 		}
 	}
+	if((sala = nave.getSalaByTipo(SALAARMAS)) != nullptr) {
+		sala->getUnidades(u);
+		for (int x = 0; x != u.size(); x++) {
+			if (u[x]->isTripulacao())
+				u[x]->setArmado(1);
+		}
+	}
+
 
 
 	//recuperar escudo da sala de controlo de escudo
@@ -220,6 +260,12 @@ void ftInimigos(Nave& nave) {
 			}
 			else {
 				sala->setIntegridade(-2);
+				if (sala->getTipo() == CONTROLO_ESCUDO
+					&& sala->getIntegridade() > 97) {
+					//
+					Escudo* e = (Escudo*)sala;
+					e->setEscudo(false);
+				}
 			}
 		}
 	} }
@@ -259,12 +305,17 @@ void ftTripulacao(Nave& nave) {
 		//
 		if ((sala = nave.getSala(l, c)) == nullptr) continue;
 		for (unsigned int x = 0; x < tripulacao[l][c].size(); x++) {
+			//robot numa sala com circuito nao faz nada
+			if (u[x]->getNome() == ROBOT && sala->getCC()) continue;
 			if (inimigos[l][c].size() > 0) {
 				//nao é necessário verificar se e combatente (toda a tripulacao e combatente)
 				//se existirem inimigos escolhe um aleatorio para lutar
 				int a = rand() % inimigos[l][c].size();
 				//provoca x dano no inimigo
-				inimigos[l][c][a]->setPV(-tripulacao[l][c][x]->isCombatente());
+				inimigos[l][c][a]->setPV(
+					-(tripulacao[l][c][x]->isCombatente()
+						+ tripulacao[l][c][x]->isArmado())
+					);
 				//
 				inimigos[l][c].clear();
 			}
@@ -273,6 +324,12 @@ void ftTripulacao(Nave& nave) {
 				if (sala->getIntegridade() < 100)
 					sala->setIntegridade(tripulacao[l][c][x]->isReparador());
 				//se nao for reparador, como o robot, retorna 0, nao faz diferenca
+				if (sala->getTipo() == CONTROLO_ESCUDO
+					&& sala->getIntegridade() == 100) {
+					//
+					Escudo* e = (Escudo*)sala;
+					e->setEscudo(true);
+				}
 			}
 		}
 	} }

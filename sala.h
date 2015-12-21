@@ -62,11 +62,13 @@ public:
 
 class Escudo : public Sala {
 	int Forca;
+	int tmpForca;
 	//vai ser necessário outra variavel para salvar a forca, temporariamente, enquanto o escudo for desativado por a sala estar danificada!
 public:
 	Escudo() : Sala(CONTROLO_ESCUDO) { }
 	void	setForca(int f, bool d = false);
 	int		getForca() const { return Forca; }
+	void	setEscudo(bool ativo);
 };
 
 class Propulsor : public Sala {
