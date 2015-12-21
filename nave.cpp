@@ -62,10 +62,16 @@ void Nave::getAllUnidades(vector<Unidades*>& u, bool d) const {
 			continue;
 		//
 		for (int x = 0; x != u1.size(); x++)
+<<<<<<< HEAD
 			if (!d) {
 				u.push_back(u1[x]);
 			}
 			else{
+=======
+			if(!d)
+			u.push_back(u1[x]);
+			else {
+>>>>>>> refs/remotes/origin/master
 				if(u1[x]->isTripulacao())
 					u.push_back(u1[x]);
 			}
