@@ -2,6 +2,7 @@
 #define NAVE_H
 
 #include "sala.h"
+#include "unidades.h"
 
 class Nave {
 	int distPercorrer;
@@ -15,7 +16,7 @@ public:
 	void	updateDistPercorrer();
 	//
 	void	getUnidades(int x, int y, vector<Unidades*>& u)	const;
-	void	getAllUnidades(vector<Unidades*>& u)			const;
+	void	getAllUnidades(vector<Unidades*>& u, bool d = false)			const;
 	int		getTotalUnidades()								const;
 	Sala*	getSala(int x, int y)							const;
 	Sala*	getSalaByTipo(string tipo)						const;
