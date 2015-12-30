@@ -108,7 +108,23 @@ void faseDeOrdens(Nave& nave) {
 				else if ((nomeUnidade == "m" || nomeUnidade == "M")
 					&& u[s]->getNome() == MEMBRO) {
 					//
-					encontrou = u[s];
+					int x = 0, n;
+					cout << "Voce tem mais que um membro." << endl;
+					cout << "Introduza o numero de qual pretende mover (inicia em 1):" << endl;
+					cin >> n;
+					for (s = 0; s != u.size(); s++) {
+						if (u[s]->getNome() == MEMBRO) {
+							if (++x == n)
+								break;
+						}
+					}
+					if (s == u.size()) {
+						cout << "Nao foi encontado esse membro!" << endl;
+						return;
+					}
+					else {
+						encontrou = u[s];
+					}
 					break;
 				}
 				else if ((nomeUnidade == "r" || nomeUnidade == "R")
@@ -306,7 +322,7 @@ void ftTripulacao(Nave& nave) {
 		if ((sala = nave.getSala(l, c)) == nullptr) continue;
 		for (unsigned int x = 0; x < tripulacao[l][c].size(); x++) {
 			//robot numa sala com circuito nao faz nada
-			if (u[x]->getNome() == ROBOT && sala->getCC()) continue;
+			if (tripulacao[l][c][x]->getNome() == ROBOT && sala->getCC()) continue;
 			if (inimigos[l][c].size() > 0) {
 				//nao é necessário verificar se e combatente (toda a tripulacao e combatente)
 				//se existirem inimigos escolhe um aleatorio para lutar
@@ -382,6 +398,9 @@ void AtaquePiratas(Nave& nave) {
 	Sala* sala;
 	Escudo *e;
 	int danoPiratas;
+
+	cout << "Voce esta a ser atacado por piratas!" << endl;
+
 	sala = nave.getSalaByTipo(CONTROLO_ESCUDO);
 	e = (Escudo*)sala;
 	danoPiratas = 30 + rand() % 30;
@@ -420,5 +439,32 @@ void AtaqueXenomorfo(Nave& nave) {
 
 }
 void CampoPoCosmico(Nave& nave) {
+	//entre 3 e 5 salas causa 10 de dano
+	//o escudo nao protege nada
+	int total_salas_dan = rand() % 3 + 3;
+	Sala* randomSala[5];
+	int i, j;
 
+	cout << endl << "Voce esta atravessando um campo de po cosmico!" << endl;
+
+	//vamos escolher essas salas aleatoriamente
+	//de forma a que a sala que acabou de ser escolhida
+	//nao seja igual a nenhuma das já escolhidas
+	//para que nao se repitam salas
+	cout << "As salas:" << endl;
+	for (i = 0; i < total_salas_dan; i++) {
+		do {
+			randomSala[i] = SalaRandom(nave);
+			for (j = 0; j < i; j++) {
+				if (randomSala[j] == randomSala[i])
+					break;
+			}
+		} while (j != i);
+		//quando nao existir nenhuma sala igual
+		//o j acaba com valor igual a i
+		//aplica-se entao o dano
+		randomSala[i]->setIntegridade(-10);
+		cout << randomSala[i]->getTipo().c_str() << endl;
+	}
+	cout << "Foram danificadas devido ao campo de po cosmico!" << endl << endl;
 }
