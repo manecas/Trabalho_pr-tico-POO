@@ -10,6 +10,10 @@ using std::string;
 using std::getline;
 using std::vector;
 
+#include "consola.h"
+//tem de ficar em primeiro senao faz conflito
+//com nome de um typedef da API do windows
+//que está incluido em windows.h que está na consola.h
 #include "nave.h"
 #include "unidades.h"
 #include "turnos.h"
@@ -159,6 +163,25 @@ int main() {
 	vector<Unidades*> u;
 	string nome, comando;
 	int dificuldade, p_evento = 0, t_turnos = 0;
+	Consola c;
+
+	c.setTextColor(c.VERDE_CLARO);
+	c.gotoxy(10, 10);
+	cout << "Bem-vindo a esta aventura!";
+	c.gotoxy(10, 11);
+	cout << "O seu objetivo e chegar com a nave ate ao fim da viagem!";
+	c.gotoxy(10, 13);
+	cout << "Para tal, deve escolher, de forma sabia, cada uma das salas";
+	c.gotoxy(10, 14);
+	cout << "adicionais da nave. Boa sorte";
+	c.gotoxy(10, 17);
+	cout << "Carrega numa tecla para continuar";
+
+	c.getch();
+
+	c.setBackgroundColor(c.BRANCO_CLARO);
+	c.setTextColor(c.PRETO);
+	c.clrscr();
 
 	cout << "Introduza um nome para a sua nave: " << endl;
 	getline(cin, nome);
@@ -202,7 +225,7 @@ int main() {
 
 		//Eventos
 		if (!t_turnos || t_turnos == p_evento) {
-			AtaquePiratas(nave);
+			CampoPoCosmico(nave);
 			/*switch (rand() % 4)
 			{
 			case 0:
@@ -223,9 +246,7 @@ int main() {
 				break;
 			}*/
 			//evento
-			cout << "Evento" << endl;
-
-			p_evento += 5 + rand() % 5;
+			p_evento = 5 + rand() % 5;
 		}
 		t_turnos++;
 	}
