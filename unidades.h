@@ -15,6 +15,8 @@
 class Sala;
 
 class Unidades {
+	static int lastID;
+	int ID;
 	int PV;
 	int MAX_PV;
 	int armado;
@@ -22,13 +24,14 @@ class Unidades {
 	string nome;
 public:
 	Unidades() { }
-	Unidades(string n, int max) : MAX_PV(max), PV(max), nome(n), sala(nullptr), armado(0) { }
+	Unidades(string n, int max) : MAX_PV(max), PV(max), nome(n), sala(nullptr), armado(0), ID(lastID++) { }
 	virtual ~Unidades();
 	//
 	void	setPV(int pv, bool d = false);
 	void	setSala(Sala* s);
 	void	setArmado(int a)		{ armado = a; }
 	//
+	int		getID()					const { return ID; }
 	int		getPV()					const { return PV; }
 	Sala*	getSala()				const { return sala; }
 	string	getNome()				const { return nome; }

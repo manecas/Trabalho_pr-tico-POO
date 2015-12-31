@@ -18,6 +18,8 @@ using std::vector;
 #include "unidades.h"
 #include "turnos.h"
 
+int Unidades::lastID = 0;
+
 void definirTripulacao(Nave& nave, int tbeliches) {
 
 	int tCapitao = 0, tRobot = 0, tTripulantes = (3 + tbeliches);
@@ -48,7 +50,7 @@ void definirTripulacao(Nave& nave, int tbeliches) {
 	}
 }
 void definirSalasAdicionais(Nave& nave) {
-	/*int salasPorDefinir = 6, salaAlterar[2], tBeliches = 0;
+	int salasPorDefinir = 6, salaAlterar[2], tBeliches = 0;
 	bool temAlujCap = false, temRobotica = false;
 	Sala* sala;
 	int idSalas[3][5] = {
@@ -139,13 +141,10 @@ void definirSalasAdicionais(Nave& nave) {
 	} while (--salasPorDefinir > 0);
 
 	//adicionar tripulacao
-	for (int t = 0; t != 3 + tBeliches; t++) //ficam todos na ponte
-		nave.getSala(1, 4)->addUnidade(new Membro);
+	definirTripulacao(nave, tBeliches);
 
-*/
-
-
-	//se quiseres testar a nave sem ter de definir salas bloqueia o resto do codigo e compila este
+	/*
+	//para testar a nave de forma rápida
 	
 	nave.configSala(0, 1, new Propulsor);
 	nave.configSala(0, 2, new Beliches);
@@ -153,9 +152,8 @@ void definirSalasAdicionais(Nave& nave) {
 	nave.configSala(2, 1, new Robotica);
 	nave.configSala(2, 2, new Enfermaria);
 	nave.configSala(2, 3, new Propulsor);
-	
 
-	definirTripulacao(nave, 2);
+	definirTripulacao(nave, 2);*/
 }
 
 int main() {
