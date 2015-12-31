@@ -80,6 +80,7 @@ void faseDeOrdens(Nave& nave) {
 			Unidades* encontrou = nullptr;
 			string nomeUnidade, direcao;
 			std::stringstream s(comando);
+			int IDunidades;
 
 			//seguindo a logica que divisao por espacos e a primeira palavra e' o comando
 			//repete-se nomeUnidade, assim quando o nomeUnidade é usado segunda vez
@@ -96,48 +97,48 @@ void faseDeOrdens(Nave& nave) {
 			}
 			//verificar se unidade existe
 			//precisa ser alterado (se existirem 2 membros, move sempre o primeiro)
-			u.clear();
-			nave.getAllUnidades(u);
-			for (int s = 0; s != u.size(); s++) {
-				if ((nomeUnidade == "c" || nomeUnidade == "C")
-					&& u[s]->getNome() == CAPITAO) {
-					//
-					encontrou = u[s];
-					break;
-				}
-				else if ((nomeUnidade == "m" || nomeUnidade == "M")
-					&& u[s]->getNome() == MEMBRO) {
-					//
-					int x = 0, n;
-					cout << "Voce tem mais que um membro." << endl;
-					cout << "Introduza o numero de qual pretende mover (inicia em 1):" << endl;
-					cin >> n;
-					for (s = 0; s != u.size(); s++) {
-						if (u[s]->getNome() == MEMBRO) {
-							if (++x == n)
-								break;
-						}
-					}
-					if (s == u.size()) {
-						cout << "Nao foi encontado esse membro!" << endl;
-						return;
-					}
-					else {
+			IDunidades = stoi(nomeUnidade);
+			if (IDunidades > 0 && IDunidades < 9) {
+				int s;
+				u.clear();
+				nave.getAllUnidades(u);
+				for (s = 0; s != u.size(); s++) {
+					if (IDunidades == u[s]->getID()) {
 						encontrou = u[s];
+						break;
 					}
-					break;
 				}
-				else if ((nomeUnidade == "r" || nomeUnidade == "R")
-					&& u[s]->getNome() == ROBOT) {
-					//
-					encontrou = u[s];
-					break;
-				}
-
 			}
-			if (encontrou == nullptr) {
-				cout << "Unidade nao encontrada!" << endl;
-				continue;
+			else {
+				u.clear();
+				nave.getAllUnidades(u);
+				for (int s = 0; s != u.size(); s++) {
+					if ((nomeUnidade == "c" || nomeUnidade == "C")
+						&& u[s]->getNome() == CAPITAO) {
+						//
+						encontrou = u[s];
+						break;
+					}
+					else if ((nomeUnidade == "m" || nomeUnidade == "M")
+						&& u[s]->getNome() == MEMBRO) {
+						//
+						int x = 0;
+						cout << "Voce tem mais que um membro." << endl;
+						cout << "Por favor, mova por ID." << endl;
+						break;
+					}
+					else if ((nomeUnidade == "r" || nomeUnidade == "R")
+						&& u[s]->getNome() == ROBOT) {
+						//
+						encontrou = u[s];
+						break;
+					}
+
+				}
+				if (encontrou == nullptr) {
+					cout << "Unidade nao encontrada!" << endl;
+					continue;
+				}
 			}
 			//movimento
 			if (direcao == "n" || direcao == "N"

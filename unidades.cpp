@@ -7,7 +7,7 @@ using std::ostringstream;
 using std::endl;
 
 #include "unidades.h"
-#include "sala.h" //se nao include, a variavel sala em sala->getAsString() é considerada incompleta
+#include "sala.h"
 
 Unidades::~Unidades() {
 	//quando a unidade é destruida é necessário remove-la da sala!
@@ -39,11 +39,19 @@ void Unidades::setSala(Sala* s) {
 string Unidades::getAsString() const {
 
 	ostringstream oss;
+	bool tripulante = false;
+	if (nome == MEMBRO || nome == CAPITAO || nome == ROBOT)
+		tripulante = true;
+
 	if (sala == nullptr)
-		oss << "shit" << endl;
+		oss << "*erro*" << endl;
 	else {
-		oss << "Nome:" << nome << " PV:" << PV
-			<< " Sala:" << sala->getAsString();
+		oss << "Nome:" << nome << " PV:" << PV;
+
+		if (tripulante)
+			oss << " ID: " << ID;
+		
+		oss << " Sala:" << sala->getAsString();
 	}
 	return oss.str();
 }
