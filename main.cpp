@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <ctime>
+#include <sstream>
 
 using std::cout;
 using std::endl;
@@ -9,20 +10,23 @@ using std::cin;
 using std::string;
 using std::getline;
 using std::vector;
+using std::ostringstream;
 
 #include "consola.h"
 //tem de ficar em primeiro senao faz conflito
 //com nome de um typedef da API do windows
 //que está incluido em windows.h que está na consola.h
-#include "nave.h"
+#include "sala.h"
 #include "unidades.h"
+#include "nave.h"
 #include "turnos.h"
+#include "graficos.h"
 
 int Unidades::lastID = 0;
 
-void definirTripulacao(Nave& nave, int tbeliches) {
+void definirTripulacao(Consola& consola, Nave& nave, int tbeliches) {
 
-	int tCapitao = 0, tRobot = 0, tTripulantes = (3 + tbeliches);
+	int tCapitao = 0, tRobot = 0, tTripulantes = (3 + tbeliches), nl = 0;
 	if (nave.getSalaByTipo(ROBOTICA) != nullptr) {
 		Unidades* uni = new Robot;
 		nave.getSala(1, 4)->addUnidade(uni);
@@ -33,24 +37,38 @@ void definirTripulacao(Nave& nave, int tbeliches) {
 		nave.getSala(1, 4)->addUnidade(uni);
 		tCapitao = 1;
 	}
-	cout << "A sua nave tem " << tTripulantes << " tripulantes." << endl;
-	cout << "Unidades:" << endl;
-	if (tCapitao)
-		cout << "1 Capitao" << endl;
+	consola.setScreenSize(40, 150);
+	consola.clrscr();
+	consola.gotoxy(60, 15);
+	cout << "A sua nave tem " << tTripulantes << " tripulantes.";
+	consola.gotoxy(60, 16);
+	cout << "Unidades:";
+	if (tCapitao) {
+		consola.gotoxy(60, 17);
+		cout << "1 Capitao";
+		nl++;
+	}
 	//
-	if (tRobot)
-		cout << "1 Robot" << endl;
+	if (tRobot) {
+		consola.gotoxy(60, 17 + nl);
+		cout << "1 Robot";
+		nl++;
+	}
 	//
 	tTripulantes -= (tCapitao + tRobot); //so membros
-	cout << tTripulantes << " Membro(s)" << endl;
+	consola.gotoxy(60, 17 + nl);
+	cout << tTripulantes << " Membro(s)";
 
 	for (int t = 0; t != tTripulantes; t++) {
 		Unidades* uni = new Membro;
 		nave.getSala(1, 4)->addUnidade(uni);
 	}
+	consola.gotoxy(60, 19 + nl);
+	cout << "Pressione qualquer tecla para continuar";
+	consola.getch();
 }
-void definirSalasAdicionais(Nave& nave) {
-	int salasPorDefinir = 6, salaAlterar[2], tBeliches = 0;
+void definirSalasAdicionais(Consola& consola, Nave& nave) {
+	/*int salasPorDefinir = 6, salaAlterar[2], tBeliches = 0;
 	bool temAlujCap = false, temRobotica = false;
 	Sala* sala;
 	int idSalas[3][5] = {
@@ -72,6 +90,21 @@ void definirSalasAdicionais(Nave& nave) {
 		SALAARMAS, ALUJAMENTOCAP, ROBOTICA };
 
 	do {
+		consola.gotoxy(110, 3);
+		cout << "Voce tem disponivel as seguintes salas:" << endl;
+		for (int x = 0; x < 9; x++) {
+			consola.gotoxy(110, 4 + x);
+			cout << "                            ";
+		}
+		for (int n = 0, x = 0; n != 9; n++) {
+			if (temAlujCap && n == 7) continue;
+			if (temRobotica && n == 8) continue;
+			//
+			consola.gotoxy(110, 4 + (x++));
+			cout << n + 1 << " -> " << nomeSalas[n];
+		}
+
+		consola.gotoxy(5, 23);
 		cout << "A(s) sala(s) ";
 
 		for (int l = 0; l < 3; l++) {
@@ -83,17 +116,12 @@ void definirSalasAdicionais(Nave& nave) {
 			}
 		} }
 
-		cout << "ainda nao estao definidas!" << endl;
-		cout << "Voce tem disponivel as seguintes salas:" << endl;
-		for (int n = 0; n != 9; n++) {
-			if (temAlujCap && n == 7) continue;
-			if (temRobotica && n == 8) continue;
-			//
-			cout << n + 1 << " -> " << nomeSalas[n] << endl;
-		}
-
-		cout << "Introduza os dados no formato <posicao sala> <id modelo sala>" << endl;
-
+		cout << "ainda nao estao definidas!			";
+		consola.gotoxy(5, 24);
+		cout << "Introduza os dados no formato <posicao sala> <id modelo sala>";
+		consola.gotoxy(5, 25);
+		cout << "                ";
+		consola.gotoxy(5, 25);
 		cin >> salaAlterar[0] >> salaAlterar[1];
 		salaAlterar[0] --;
 
@@ -137,13 +165,13 @@ void definirSalasAdicionais(Nave& nave) {
 		}
 		//e necessário condifgSala porque ainda nao foi nada definido
 		nave.configSala(posSalas[salaAlterar[0]][0], posSalas[salaAlterar[0]][1], sala);
-
+		atualizarTextoSala(consola, nave, posSalas[salaAlterar[0]][0], posSalas[salaAlterar[0]][1]);
 	} while (--salasPorDefinir > 0);
 
 	//adicionar tripulacao
-	definirTripulacao(nave, tBeliches);
+	definirTripulacao(consola, nave, tBeliches);*/
 
-	/*
+	
 	//para testar a nave de forma rápida
 	
 	nave.configSala(0, 1, new Propulsor);
@@ -153,15 +181,17 @@ void definirSalasAdicionais(Nave& nave) {
 	nave.configSala(2, 2, new Enfermaria);
 	nave.configSala(2, 3, new Propulsor);
 
-	definirTripulacao(nave, 2);*/
+	definirTripulacao(consola, nave, 2);
 }
+
 
 int main() {
 
 	vector<Unidades*> u;
 	string nome, comando;
-	int dificuldade, p_evento = 0, t_turnos = 0;
+	int dificuldade = 1, p_evento = 0, t_turnos = 0;
 	Consola c;
+	char tecla;
 
 	c.setTextColor(c.VERDE_CLARO);
 	c.gotoxy(10, 10);
@@ -181,39 +211,88 @@ int main() {
 	c.setTextColor(c.PRETO);
 	c.clrscr();
 
-	cout << "Introduza um nome para a sua nave: " << endl;
+	c.gotoxy(45, 10);
+	cout << "Introduza um nome para a sua nave: ";
+	c.gotoxy(55, 12);
 	getline(cin, nome);
 	//
-	cout << "Nivel de dificuldade da missao?" << endl;
-	cin >> dificuldade;
+	c.gotoxy(30, 10);
+	cout << "Nivel de dificuldade da missao? (Use as teclas esquerda e direita)";
+	c.gotoxy(55, 12);
+	cout << "                   "; //limpar o nome da nave
+
+	do {
+		c.gotoxy(55, 12);
+		if (dificuldade > 1)
+			cout << "< ";
+		else
+			cout << "  ";
+		cout << dificuldade << " >";
+
+		tecla = c.getch();
+
+		if (tecla == c.ESQUERDA && dificuldade > 1) dificuldade--;
+		if (tecla == c.DIREITA) dificuldade++;
+
+	} while (tecla != c.ENTER);
 	//
 	Nave nave(nome, dificuldade);
-	definirSalasAdicionais(nave);
+	c.setScreenSize(30, 150);
+	c.setBackgroundColor(c.PRETO);
+	c.setTextColor(c.BRANCO);
+	c.clrscr();
+	desenharNave(c, nave);
+	definirSalasAdicionais(c, nave);
 	//
-	cout << "Vamos dar inicio a viagem!" << endl;
+	c.setScreenSize(40, 150);
+	c.setBackgroundColor(c.PRETO);
+	c.clrscr();
+	desenharNave(c, nave);
+
+	c.gotoxy(110, 3);
+	cout << "Suas Unidades:";
+	atualizarListaUnidades();
+	c.gotoxy(110, 15);
+	cout << "Unidades Inimigas:";
+	atualizarListaInimigos();
+
+	c.gotoxy(5, 26);
+	cout << "Output:";
+	c.gotoxy(5, 23);
+	cout << "Ordens:";
+	//
 	std::srand((unsigned int)std::time(0));
 	while (1) {
+		string* send;
+		ostringstream oss;
 		u.clear();
 		if (nave.isNaveDestruida()) {
-			cout << "Uma sala foi destruida, perdeste o jogo!" << endl;
+			//cout << "Uma sala foi destruida, perdeste o jogo!" << endl;
+			//é preciso limpar o ecra e mostrar uma mensagem no meio a dizer
+			//que perdeu o jogo
 			break;
 		}
 		if (nave.getDistPercorrer() <= 0) {
-			cout << "Fim da brincadeira!" << endl << "Voce ganhou" << endl;
+			//cout << "Fim da brincadeira!" << endl << "Voce ganhou" << endl;
+			//mesma voida do anterior mas a dizer que ganhou
 			break;
 		}
 		//
 		nave.getAllUnidades(u);
 		if (!u.size()) {
-			cout << "Todas as unidades morreram, voce perdeu o jogo!" << endl;
+			//cout << "Todas as unidades morreram, voce perdeu o jogo!" << endl;
+			//mesam coisa dos anteriores
 			break;
 		}
-		cout << "Faltam " << nave.getDistPercorrer() << " milhas ate ao fim!" << endl;
+		oss << "Faltam " << nave.getDistPercorrer() << " milhas ate ao fim!";
+		send = new string[1];
+		send[0] = oss.str();
+		atualizarOutput(c, send);
 		//Viagem acaba se não houverem tripulantes nenhuns na nave
 		//Inicio da turno
 		inicioTurno(nave);
 		//Fase de ordens
-		faseDeOrdens(nave);
+		faseDeOrdens(c, nave);
 		//Final do turno
 		ftEfeitosAmbientais(nave);
 		ftSalas(nave);
@@ -248,7 +327,8 @@ int main() {
 		}
 		t_turnos++;
 	}
-
+	//lipar tudo o que está em memoria dinamica
+	//destrutor da nave
 
 	
 	return 0;

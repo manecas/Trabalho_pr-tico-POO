@@ -3,7 +3,7 @@
 
 void inicioTurno(Nave& nave);
 
-void faseDeOrdens(Nave& nave);
+void faseDeOrdens(Consola& consola, Nave& nave);
 
 void ftEfeitosAmbientais(Nave& nave);
 void ftSalas(Nave& nave);

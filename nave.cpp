@@ -5,6 +5,8 @@
 using std::vector;
 using std::string;
 
+#include "sala.h"
+#include "unidades.h"
 #include "nave.h"
 
 Nave::Nave(string n, int dificuldade) : nome(n)
@@ -24,6 +26,15 @@ Nave::Nave(string n, int dificuldade) : nome(n)
 	salas[1][3] = new Sala(CONTROLO_ESCUDO);
 	salas[1][4] = new Sala(PONTE);
 	salas[2][0] = new Propulsor;
+}
+
+Nave::~Nave()
+{
+	for (int l = 0; l < 3; l++) {
+		for (int c = 0; c < 5; c++) {
+			delete salas[l][c];
+		}
+	}
 }
 
 void Nave::updateDistPercorrer() {
