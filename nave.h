@@ -19,7 +19,6 @@ public:
 	void	getAllUnidades(vector<Unidades*>& u, bool d = false)	const;
 	int		getTotalUnidades()										const;
 	Sala*	getSala(int x, int y)									const;
-	Sala*	getSalas()												const { return salas[0][0]; }
 	Sala*	getSalaByTipo(string tipo)								const;
 	Sala*	getSalaAdjacente(Sala* sala, char d)					const;
 	int		getDistPercorrer()										const;

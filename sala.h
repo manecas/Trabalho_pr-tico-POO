@@ -13,7 +13,7 @@
 #define BELICHES		"Beliches"
 #define RAIO_LASER		"Raio Laser"
 #define AUTOREPARADOR	"Auto-Reparador"
-#define SEGINTERNA		"Sistema de Seguranca Interno"
+#define SEGINTERNA		"Sistema de Seg. Interno"
 #define ENFERMARIA		"Enfermaria"
 #define SALAARMAS		"Sala de Armas"
 #define ALUJAMENTOCAP	"Alujamento do Capitao"
@@ -41,7 +41,7 @@ public:
 	void	setBrecha(bool b)						{ brecha = b; }
 	void	setCC(bool c)							{ cc = c; }
 	void	addUnidade(Unidades* u);
-	void	removerUnidade(string n);
+	void	removerUnidade(int id);
 	void	moverUnidade(string nome, Sala* sala);
 
 	int		getIntegridade()	const { return integridade; }

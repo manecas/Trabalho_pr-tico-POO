@@ -139,22 +139,22 @@ void definirSalasAdicionais(Consola& consola, Nave& nave) {
 				tBeliches++;
 				break;
 			case 3:
-				//raio laser
+				novaSala = new Sala(RAIO_LASER);
 				break;
 			case 4:
-				//auto reparador
+				novaSala = new Sala(AUTOREPARADOR);
 				break;
 			case 5:
-				//seguranca interna
+				novaSala = new Sala(SEGINTERNA);
 				break;
 			case 6:
 				sala = new Enfermaria;
 				break;
 			case 7:
-				//sala armas
+				novaSala = new Sala(SALAARMAS);
 				break;
 			case 8:
-				//alujamento capitao
+				novaSala = new Sala(ALUJAMENTOCAP);
 				temAlujCap = true;
 				break;
 			case 9:
@@ -213,8 +213,10 @@ int main() {
 
 	c.gotoxy(45, 10);
 	cout << "Introduza um nome para a sua nave: ";
-	c.gotoxy(55, 12);
-	getline(cin, nome);
+	do {
+		c.gotoxy(55, 12);
+		getline(cin, nome);
+	} while (nome.empty());
 	//
 	c.gotoxy(30, 10);
 	cout << "Nivel de dificuldade da missao? (Use as teclas esquerda e direita)";
@@ -263,6 +265,7 @@ int main() {
 	//
 	std::srand((unsigned int)std::time(0));
 	while (1) {
+		static vector<Unidades*> mist;
 		string* send;
 		ostringstream oss;
 		u.clear();
@@ -299,6 +302,22 @@ int main() {
 		ftXenmorfos(nave);
 		ftInimigos(nave);
 		ftTripulacao(nave);
+
+		//reaparece misterioso (nao testado)
+		for (vector<Unidades*>::const_iterator it = mist.begin();
+			it < mist.end(); it++) {
+
+			Sala* sala = SalaRandom(nave);
+			(*it)->setSala(sala);
+			sala->addUnidade(*it);
+		}
+		//desaparece misterioso (nao testado)
+		for (vector<Unidades*>::const_iterator it = mist.begin();
+			it < mist.end(); it++) {
+
+			(*it)->getSala()->removerUnidade((*it)->getID());
+			(*it)->setSala(nullptr);
+		}
 
 		//Eventos
 		if (!t_turnos || t_turnos == p_evento) {
