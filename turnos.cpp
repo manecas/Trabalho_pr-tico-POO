@@ -1,17 +1,23 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <vector>
+#include <sstream>
 
 using std::cout;
 using std::endl;
 using std::cin;
 using std::getline;
 using std::string;
+using std::vector;
+using std::ostringstream;
 
-#include "nave.h"
+#include "consola.h"
+#include "sala.h"
 #include "unidades.h"
+#include "nave.h"
 #include "turnos.h"
-
+#include "graficos.h"
 
 //inicio do turno
 void inicioTurno(Nave& nave) {
@@ -58,48 +64,65 @@ void inicioTurno(Nave& nave) {
 	}
 }
 //fase de ordens
-void faseDeOrdens(Nave& nave) {
+void faseDeOrdens(Consola& consola, Nave& nave) {
 	string comando;
 	vector<Unidades*> u;
 	Sala* sala;
 
-	cout << "Introduza comando para nova ordem ('ajuda' para ver comandos): " << endl;
-	while (1) {
+	//cout << "Introduza comando para nova ordem ('ajuda' para ver comandos): " << endl;
+
+	consola.gotoxy(5, 24);
+	do {
+		ostringstream oss;
+		string* send;
 		getline(cin, comando);
 		if (comando.empty()) continue;
+		//limpar texto input
+		consola.gotoxy(5, 24);
+		for (int x = 0; x < 70; x++)
+			cout << " ";
+		//
+
 		if (comando == "terminar") {
 			break;
 		}
 		else if (comando == "ajuda") {
-			cout << endl << "Comandos disponiveis:" << endl
-				<< "ajuda" << endl
-				<< "mover <InicialNomeUnidade> <Direcao>" << endl
-				<< "terminar (nao inserir mais ordens)" << endl << endl;
+			send = new string[4];
+
+			send[0] = "Comandos disponiveis:";
+			send[1] = "ajuda";
+			send[2] = "mover <InicialNomeUnidade> <Direcao>";
+			send[3] = "terminar (nao inserir mais ordens)";
+
+			atualizarOutput(consola, send, 4);
 		}
 		else if (!comando.find("mover")) {
 			Unidades* encontrou = nullptr;
 			string nomeUnidade, direcao;
 			std::stringstream s(comando);
-			int IDunidades;
+			bool membro = false;
 
 			//seguindo a logica que divisao por espacos e a primeira palavra e' o comando
 			//repete-se nomeUnidade, assim quando o nomeUnidade é usado segunda vez
 			//subestitui o primeiro valor
 			s >> nomeUnidade >> nomeUnidade >> direcao;
-
 			if (nomeUnidade.empty()) {
-				cout << "Voce nao introduziu o nome da unidade para mover!" << endl;
+				send = new string[1];
+				send[0] = "Voce nao introduziu o nome da unidade para mover!";
+				atualizarOutput(consola, send);
 				continue; //volta ao inicio do while sem executar o codigo daqui para baixo
 			}
 			if (direcao.empty()) {
-				cout << "Voce nao introduziu a direcao para mover!" << endl;
+				send = new string[1];
+				send[0] = "Voce nao introduziu a direcao para mover!";
+				atualizarOutput(consola, send);
 				continue;
 			}
 			//verificar se unidade existe
 			//precisa ser alterado (se existirem 2 membros, move sempre o primeiro)
-			IDunidades = stoi(nomeUnidade);
-			if (IDunidades > 0 && IDunidades < 9) {
+			if (nomeUnidade[0] > '0' && nomeUnidade[0] < '9') {
 				int s;
+				int IDunidades = stoi(nomeUnidade);
 				u.clear();
 				nave.getAllUnidades(u);
 				for (s = 0; s != u.size(); s++) {
@@ -122,9 +145,11 @@ void faseDeOrdens(Nave& nave) {
 					else if ((nomeUnidade == "m" || nomeUnidade == "M")
 						&& u[s]->getNome() == MEMBRO) {
 						//
-						int x = 0;
-						cout << "Voce tem mais que um membro." << endl;
-						cout << "Por favor, mova por ID." << endl;
+						membro = true;
+						send = new string[2];
+						send[0] = "Voce tem mais que um membro.";
+						send[1] = "Por favor, mova por ID.";
+						atualizarOutput(consola, send, 2);
 						break;
 					}
 					else if ((nomeUnidade == "r" || nomeUnidade == "R")
@@ -135,8 +160,13 @@ void faseDeOrdens(Nave& nave) {
 					}
 
 				}
+				if (membro)
+					continue;
+
 				if (encontrou == nullptr) {
-					cout << "Unidade nao encontrada!" << endl;
+					send = new string[1];
+					send[0] = "Unidade nao encontrada!";
+					atualizarOutput(consola, send);
 					continue;
 				}
 			}
@@ -147,18 +177,26 @@ void faseDeOrdens(Nave& nave) {
 				|| direcao == "o" || direcao == "O") {
 				if ((sala = nave.getSalaAdjacente(encontrou->getSala(), (char)direcao[0])) != nullptr)
 					encontrou->getSala()->moverUnidade(encontrou->getNome(), sala);
-				else
-					cout << "Movimento invalido!" << endl;
+				else {
+					send = new string[1];
+					send[0] = "Movimento invalido!";
+					atualizarOutput(consola, send);
+				}
 			}
 		}
 		else if (comando == "status") {
 			u.clear();
 			nave.getAllUnidades(u);
+
+			send = new string[u.size()];
 			for (int x = 0; x != u.size(); x++)
-				cout << u[x]->getAsString();
+				send[x] = u[x]->getAsString();
+
+			atualizarOutput(consola, send, u.size());
 		}
-		cout << "Introduza comando para nova ordem ('ajuda' para ver comandos):" << endl;
-	}
+
+		consola.gotoxy(5, 24);
+	} while (comando != "terminar");
 }
 //fim do turno
 void ftEfeitosAmbientais(Nave& nave) {

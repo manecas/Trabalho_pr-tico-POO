@@ -1,8 +1,8 @@
 #ifndef SALA_H
 #define SALA_H
 
-#include <vector>
-using std::vector;
+//#include <vector>
+//using std::vector;
 
 //nomes salas
 #define PONTE			"Ponte"
@@ -24,7 +24,6 @@ class Unidades;
 class Sala {
 	int integridade;
 	int oxigenio;
-	int saude;
 	string tipo;
 	vector<Unidades*> unidades;
 
@@ -34,7 +33,7 @@ class Sala {
 public:
 	Sala(string t) : tipo(t), integridade(100), oxigenio(100),
 		fogo(false), brecha(false), cc(false) { }
-	~Sala();
+	virtual ~Sala();
 
 	void	setIntegridade(int i, bool d = false);
 	void	setOxigenio(int o, bool d = false);
@@ -58,6 +57,7 @@ public:
 	bool	isOperada()			const;
 
 	string	getAsString()		const;
+	Sala&	operator=(const Sala& sala);
 };
 
 class Escudo : public Sala {
@@ -66,20 +66,22 @@ class Escudo : public Sala {
 	//vai ser necessário outra variavel para salvar a forca, temporariamente, enquanto o escudo for desativado por a sala estar danificada!
 public:
 	Escudo() : Sala(CONTROLO_ESCUDO) { }
-	void	setForca(int f, bool d = false);
-	int		getForca() const { return Forca; }
-	void	setEscudo(bool ativo);
+	~Escudo()	{ Sala::~Sala(); }
+	void		setForca(int f, bool d = false);
+	int			getForca() const { return Forca; }
+	void		setEscudo(bool ativo);
 };
 
 class Propulsor : public Sala {
 public:
 	Propulsor() : Sala(PROPULSOR) { }
+	~Propulsor() { Sala::~Sala(); }
 };
 
 class Beliches : public Sala {
 public:
 	Beliches() : Sala(BELICHES) { }
-	~Beliches() { }
+	~Beliches() { Sala::~Sala(); }
 };
 //raio-laser
 //autoreparador
@@ -87,14 +89,14 @@ public:
 class Enfermaria : public Sala {
 public:
 	Enfermaria() : Sala(ENFERMARIA) { }
-	~Enfermaria() { }
+	~Enfermaria() { Sala::~Sala(); }
 };
 //sala armas
 //alujamento capitao
 class Robotica : public Sala {
 public:
 	Robotica() : Sala(ROBOTICA) { }
-	~Robotica() { }
+	~Robotica() { Sala::~Sala(); }
 };
 
 #endif

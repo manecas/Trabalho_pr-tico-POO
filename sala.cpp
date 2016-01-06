@@ -103,6 +103,22 @@ string Sala::getAsString() const {
 	return oss.str();
 }
 
+Sala & Sala::operator=(const Sala & sala)
+{
+	integridade = sala.integridade;
+	oxigenio = sala.oxigenio;
+	tipo = sala.tipo;
+
+	for (int a = 0; a != sala.unidades.size(); a++)
+		unidades[a] = sala.unidades[a];
+
+	fogo = sala.fogo;
+	cc = sala.cc;
+	brecha = sala.brecha;
+
+	return *this;
+}
+
 void Escudo::setForca(int f, bool d) {
 
 	if (d)

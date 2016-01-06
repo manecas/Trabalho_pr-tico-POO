@@ -1,10 +1,12 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 using std::string;
 using std::ostringstream;
 using std::endl;
+using std::vector;
 
 #include "unidades.h"
 #include "sala.h"
