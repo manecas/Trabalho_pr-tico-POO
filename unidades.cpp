@@ -11,9 +11,20 @@ using std::vector;
 #include "unidades.h"
 #include "sala.h"
 
+Unidades::Unidades(const Unidades& u)
+{
+	ID = u.ID;
+	PV = u.PV;
+	MAX_PV = u.MAX_PV;
+	armado = u.armado;
+	indeciso = u.indeciso;
+	sala = u.sala;
+	nome = u.nome;
+}
+
 Unidades::~Unidades() {
 	//quando a unidade é destruida é necessário remove-la da sala!
-	sala->removerUnidade(nome);
+	sala->removerUnidade(ID);
 	//std::cout << "Unidade " << nome << " destruida" << endl;
 }
 
@@ -32,10 +43,16 @@ void Unidades::setPV(int pv, bool d) {
 		delete this;
 }
 
-void Unidades::setSala(Sala* s) {
-
-	if(s != nullptr)
+void Unidades::setSala(Sala* s, bool force) {
+	//a condicao "s != nullptr" era para proteger de forma a nao colocar
+	//unidades em salas invalidas, no entanto, uma vez que existem
+	//os misteriosos vamos precisas de ocultar essas unidades
+	//para isso adicionei o parametro "force", caso "force" seja verdadeiro
+	//a unidade vai para a sala, mesmo sendo invalida e assim é mais
+	//facil de atualizar a lista de unidades nas salas
+	if(s != nullptr && !force || force)
 		sala = s;
+
 }
 
 string Unidades::getAsString() const {
@@ -46,7 +63,7 @@ string Unidades::getAsString() const {
 		tripulante = true;
 
 	if (sala == nullptr)
-		oss << "*erro*" << endl;
+		oss << "Nome:" << nome << " PV:" << PV;
 	else {
 		oss << "Nome:" << nome << " PV:" << PV;
 
@@ -56,4 +73,20 @@ string Unidades::getAsString() const {
 		oss << " Sala:" << sala->getAsString();
 	}
 	return oss.str();
+}
+
+int * Unidades::isInimigo()
+{
+	int* a = new int[2];
+	a[0] = 0;
+	a[1] = 0;
+	return a;
+}
+
+int * Pirata::isInimigo()
+{
+	int* a = new int[2];
+	a[0] = 1;
+	a[1] = 2;
+	return a;
 }

@@ -61,13 +61,77 @@ void inicioTurno(Nave& nave) {
 				sala->moverUnidade(u[x]->getNome(), novaSala);
 			}
 		}
+
+		//nao testado
+		if ((tmpVal = u[x]->isMutatis()) != 0) {
+			if (rand() % 100 < tmpVal) {
+				int l, c;
+				Sala* novaSala;
+				sala = u[x]->getSala();
+
+				for (l = 0; l < 3; l++) {
+				for (c = 0; c < 5; c++) {
+					//
+					if (nave.getSala(l, c) == sala)
+						break;
+					//
+				} }
+
+				switch ( (rand() % 7) + 1 ) {
+				case 1:
+					novaSala = new Propulsor;
+					break;
+				case 2:
+					novaSala = new Beliches;
+					break;
+				case 3:
+					novaSala = new Sala(RAIO_LASER);
+					break;
+				case 4:
+					novaSala = new Sala(AUTOREPARADOR);
+					break;
+				case 5:
+					novaSala = new Sala(SEGINTERNA);
+					break;
+				case 6:
+					novaSala = new Enfermaria;
+					break;
+				case 7:
+					novaSala = new Sala(SALAARMAS);
+					break;
+				}
+
+				novaSala = sala;
+				delete sala;
+
+				nave.configSala(l, c, novaSala);
+			}
+		}
+		
+		//nao testado
+		if ((tmpVal = u[x]->isHipnotizador()) != 0) {
+			if (rand() % 100 < tmpVal) {
+				
+				vector<Unidades*> uS;
+				u[x]->getSala()->getUnidades(uS);
+				int r = rand() % uS.size();
+
+				uS[r]->setIndeciso(true);
+			}
+		}
 	}
 }
 //fase de ordens
 void faseDeOrdens(Consola& consola, Nave& nave) {
 	string comando;
 	vector<Unidades*> u;
+	bool* ignorouOrdem;
 	Sala* sala;
+
+	nave.getAllUnidades(u);
+	ignorouOrdem = new bool[u.size()];
+	for (int x = 0; x < (int)u.size(); x++)
+		ignorouOrdem[x] = false;
 
 	//cout << "Introduza comando para nova ordem ('ajuda' para ver comandos): " << endl;
 
@@ -175,8 +239,12 @@ void faseDeOrdens(Consola& consola, Nave& nave) {
 				|| direcao == "s" || direcao == "S"
 				|| direcao == "e" || direcao == "E"
 				|| direcao == "o" || direcao == "O") {
-				if ((sala = nave.getSalaAdjacente(encontrou->getSala(), (char)direcao[0])) != nullptr)
-					encontrou->getSala()->moverUnidade(encontrou->getNome(), sala);
+				if ((sala = nave.getSalaAdjacente(encontrou->getSala(), (char)direcao[0])) != nullptr) {
+					if (encontrou->isIndeciso() && !ignorouOrdem[encontrou->getID()] && rand() % 100 < 50)
+						ignorouOrdem[encontrou->getID()] = true;
+					else
+						encontrou->getSala()->moverUnidade(encontrou->getNome(), sala);
+				}
 				else {
 					send = new string[1];
 					send[0] = "Movimento invalido!";
@@ -277,6 +345,8 @@ void ftSalas(Nave& nave) {
 }
 void ftXenmorfos(Nave& nave) {
 
+
+
 }
 void ftInimigos(Nave& nave) {
 	//inimigos atacam tripulacao
@@ -304,17 +374,18 @@ void ftInimigos(Nave& nave) {
 		//
 		if ((sala = nave.getSala(l, c)) == nullptr) continue;
 		for (unsigned int x = 0; x < inimigos[l][c].size(); x++) {
+			int* d = inimigos[l][c][x]->isInimigo();
 			if (tripOUxeno[l][c].size() > 0) {
 				//nao é necessário verificar se e combatente (toda a tripulacao e combatente)
 				//se existirem inimigos escolhe um aleatorio para lutar
 				int a = rand() % tripOUxeno[l][c].size();
 				//provoca x dano no inimigo
-				tripOUxeno[l][c][a]->setPV(-inimigos[l][c][x]->isInimigo());
+				tripOUxeno[l][c][a]->setPV(-d[0]);
 				//
 				tripOUxeno[l][c].clear();
 			}
 			else {
-				sala->setIntegridade(-2);
+				sala->setIntegridade(-d[1]);
 				if (sala->getTipo() == CONTROLO_ESCUDO
 					&& sala->getIntegridade() > 97) {
 					//
@@ -322,6 +393,7 @@ void ftInimigos(Nave& nave) {
 					e->setEscudo(false);
 				}
 			}
+			delete d;
 		}
 	} }
 }
@@ -390,7 +462,7 @@ void ftTripulacao(Nave& nave) {
 	} }
 }
 //eventos
-Sala *SalaRandom(Nave& nave) {
+Sala* SalaRandom(Nave& nave) {
 
 	int l, c;
 

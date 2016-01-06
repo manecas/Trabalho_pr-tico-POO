@@ -56,9 +56,9 @@ void Sala::addUnidade(Unidades * u) {
 	u->setSala(this); //esquece o *this, this já é um ponteiro
 }
 
-void Sala::removerUnidade(string n) {
+void Sala::removerUnidade(int id) {
 	for (int x = 0; x != unidades.size(); x++) {
-		if (unidades[x]->getNome() == n) {
+		if (unidades[x]->getID() == id) {
 			unidades.erase(unidades.begin() + x);
 			break;
 		}
@@ -105,16 +105,21 @@ string Sala::getAsString() const {
 
 Sala & Sala::operator=(const Sala & sala)
 {
-	integridade = sala.integridade;
-	oxigenio = sala.oxigenio;
-	tipo = sala.tipo;
 
-	for (int a = 0; a != sala.unidades.size(); a++)
-		unidades[a] = sala.unidades[a];
+	for (int a = 0; a != sala.unidades.size(); a++) {
 
-	fogo = sala.fogo;
-	cc = sala.cc;
-	brecha = sala.brecha;
+		if (unidades[a]->getNome() == CAPITAO)
+			unidades[a] = new Capitao(sala.unidades[a]);
+
+		else if (unidades[a]->getNome() == MEMBRO)
+			unidades[a] = new Membro(sala.unidades[a]);
+
+		else if (unidades[a]->getNome() == ROBOT)
+			unidades[a] = new Robot(sala.unidades[a]);
+		//completar para todas
+
+		unidades[a]->setSala(this);
+	}
 
 	return *this;
 }
