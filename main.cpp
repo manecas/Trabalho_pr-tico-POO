@@ -16,6 +16,7 @@ using std::ostringstream;
 //tem de ficar em primeiro senao faz conflito
 //com nome de um typedef da API do windows
 //que está incluido em windows.h que está na consola.h
+#include "caract.h"
 #include "sala.h"
 #include "unidades.h"
 #include "nave.h"
@@ -29,12 +30,12 @@ void definirTripulacao(Consola& consola, Nave& nave, int tbeliches) {
 	Sala* sala = nave.getSala(1, 4);
 	if (nave.getSalaByTipo(ROBOTICA) != nullptr) {
 		Unidades* uni = new Robot;
-		sala->addUnidade(uni);
+		uni->mover(sala);
 		tRobot = 1;
 	}
 	if (nave.getSalaByTipo(ALUJAMENTOCAP) != nullptr) {
 		Unidades* uni = new Capitao;
-		sala->addUnidade(uni);
+		uni->mover(sala);
 		tCapitao = 1;
 	}
 	consola.setScreenSize(40, 150);
@@ -61,7 +62,7 @@ void definirTripulacao(Consola& consola, Nave& nave, int tbeliches) {
 
 	for (int t = 0; t != tTripulantes; t++) {
 		Unidades* uni = new Membro;
-		sala->addUnidade(uni);
+		uni->mover(sala);
 	}
 	consola.gotoxy(60, 19 + nl);
 	cout << "Pressione qualquer tecla para continuar";
@@ -332,15 +333,14 @@ int main() {
 			it < mist.end(); it++) {
 
 			Sala* sala = SalaRandom(nave);
-			sala->addUnidade(*it);
+			(*it)->mover(sala);
 		}
 		//desaparece misterioso (nao testado)
 		for (vector<Unidades*>::const_iterator it = u.begin();
 			it < u.end(); it++) {
 			if ((*it)->isMisterioso()) {
 				//
-				(*it)->getSala()->removerUnidade((*it)->getID());
-				(*it)->setSala(nullptr);
+				(*it)->mover(nullptr);
 			}
 		}
 

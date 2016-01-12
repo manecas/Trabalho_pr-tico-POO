@@ -29,10 +29,12 @@ public:
 	Unidades(string n, int max) : MAX_PV(max), PV(max), nome(n),
 		sala(nullptr), armado(0), indeciso(0), ID(lastID++) { }
 
-	virtual ~Unidades();
+	virtual ~Unidades() {
+	
+	}
 	//
 	void	setPV(int pv, bool d = false);
-	void	setSala(Sala* s, bool force = false);
+	//void	setSala(Sala* s, bool force = false);
 	void	setArmado(int a)		{ armado = a; }
 	void	setIndeciso(bool i)		{ indeciso = (int)i; }
 	//
@@ -41,6 +43,13 @@ public:
 	Sala*	getSala()				const { return sala; }
 	string	getNome()				const { return nome; }
 	string	getAsString()			const;
+	//
+	void	mover(Sala* sala);
+
+	//
+	virtual void inicioTurno()		{ return; }
+	virtual void fimTurno()			{ return; }
+
 	//
 	virtual int isRespira()			{ return 0; }
 	virtual int isFlamejante()		{ return 0; }
@@ -76,11 +85,15 @@ public:
 	int isTripulacao()				{ return 1; }
 };
 
-class Membro : public Unidades {
+class Membro : public Unidades, public Respira {
 public:
-	Membro() : Unidades(MEMBRO, 5) { }
+	Membro() : Unidades(MEMBRO, 5), Respira() { }
 	Membro(Unidades* u) : Unidades(*u) { }
 	~Membro() { }
+
+	void inicioTurno()		{ Respira::inicioTurno(this); }
+	void fimTurno()			{ Respira::fimTurno(this); }
+
 	int isRespira()					{ return 1; }
 	int isReparador()				{ return 2; }
 	int isCombatente()				{ return 1; }
