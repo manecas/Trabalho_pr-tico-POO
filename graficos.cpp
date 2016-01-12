@@ -23,7 +23,7 @@ void atualizarOutput(Consola& c, string* o, int tam) {
 
 	for (int x = 0; x < 10; x++) {
 		c.gotoxy(5, 27 + x);
-		for (int y = 0; y < 90; y++)
+		for (int y = 0; y < 100; y++)
 			cout << " ";
 	}
 	//

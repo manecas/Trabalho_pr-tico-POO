@@ -22,19 +22,19 @@ using std::ostringstream;
 #include "turnos.h"
 #include "graficos.h"
 
-int Unidades::lastID = 0;
 
 void definirTripulacao(Consola& consola, Nave& nave, int tbeliches) {
 
 	int tCapitao = 0, tRobot = 0, tTripulantes = (3 + tbeliches), nl = 0;
+	Sala* sala = nave.getSala(1, 4);
 	if (nave.getSalaByTipo(ROBOTICA) != nullptr) {
 		Unidades* uni = new Robot;
-		nave.getSala(1, 4)->addUnidade(uni);
+		sala->addUnidade(uni);
 		tRobot = 1;
 	}
 	if (nave.getSalaByTipo(ALUJAMENTOCAP) != nullptr) {
 		Unidades* uni = new Capitao;
-		nave.getSala(1, 4)->addUnidade(uni);
+		sala->addUnidade(uni);
 		tCapitao = 1;
 	}
 	consola.setScreenSize(40, 150);
@@ -61,7 +61,7 @@ void definirTripulacao(Consola& consola, Nave& nave, int tbeliches) {
 
 	for (int t = 0; t != tTripulantes; t++) {
 		Unidades* uni = new Membro;
-		nave.getSala(1, 4)->addUnidade(uni);
+		sala->addUnidade(uni);
 	}
 	consola.gotoxy(60, 19 + nl);
 	cout << "Pressione qualquer tecla para continuar";
@@ -183,15 +183,14 @@ void definirSalasAdicionais(Consola& consola, Nave& nave) {
 
 	definirTripulacao(consola, nave, 2);
 }
+void apresentarTutorial(Consola& c) {
 
-
-int main() {
-
-	vector<Unidades*> u;
-	string nome, comando;
-	int dificuldade = 1, p_evento = 0, t_turnos = 0;
-	Consola c;
+}
+void iniciarJogo(Consola& c, Nave& nave) {
+	
 	char tecla;
+	string nome;
+	int dificuldade = 1;
 
 	c.setTextColor(c.VERDE_CLARO);
 	c.gotoxy(10, 10);
@@ -211,6 +210,17 @@ int main() {
 	c.setTextColor(c.PRETO);
 	c.clrscr();
 
+	//perguntar se desejar ver tutorial
+	c.gotoxy(50, 10);
+	cout << "Deseja ver um tutorial?";
+	c.gotoxy(48, 12);
+	cout << "(Enter) -> Sim | (Esc) -> Nao";
+
+	tecla = c.getch();
+	if (tecla == c.ENTER)
+		apresentarTutorial(c);
+
+	c.clrscr();
 	c.gotoxy(45, 10);
 	cout << "Introduza um nome para a sua nave: ";
 	do {
@@ -238,11 +248,14 @@ int main() {
 
 	} while (tecla != c.ENTER);
 	//
-	Nave nave(nome, dificuldade);
+
 	c.setScreenSize(30, 150);
 	c.setBackgroundColor(c.PRETO);
 	c.setTextColor(c.BRANCO);
 	c.clrscr();
+
+	//
+	nave.config(nome, dificuldade);
 	desenharNave(c, nave);
 	definirSalasAdicionais(c, nave);
 	//
@@ -262,13 +275,21 @@ int main() {
 	cout << "Output:";
 	c.gotoxy(5, 23);
 	cout << "Ordens:";
+}
+
+int main() {
+
+	vector<Unidades*> u, mist;
+	int p_evento = 0, t_turnos = 0;
+	string* send;
+	Consola c;
+	Nave nave;
+
+	iniciarJogo(c, nave);
 	//
 	std::srand((unsigned int)std::time(0));
 	while (1) {
-		static vector<Unidades*> mist;
-		string* send;
 		ostringstream oss;
-		u.clear();
 		if (nave.isNaveDestruida()) {
 			//cout << "Uma sala foi destruida, perdeste o jogo!" << endl;
 			//é preciso limpar o ecra e mostrar uma mensagem no meio a dizer
@@ -276,13 +297,14 @@ int main() {
 			break;
 		}
 		if (nave.getDistPercorrer() <= 0) {
-			//cout << "Fim da brincadeira!" << endl << "Voce ganhou" << endl;
+			cout << "Fim da brincadeira!" << endl << "Voce ganhou" << endl;
 			//mesma voida do anterior mas a dizer que ganhou
 			break;
 		}
 		//
-		nave.getAllUnidades(u);
-		if (!u.size()) {
+		u.clear();
+		nave.getAllTripulacao(u);
+		if (u.empty()) {
 			//cout << "Todas as unidades morreram, voce perdeu o jogo!" << endl;
 			//mesam coisa dos anteriores
 			break;
@@ -303,25 +325,28 @@ int main() {
 		ftInimigos(nave);
 		ftTripulacao(nave);
 
+		u.clear();
+		nave.getAllTripulacao(u);
 		//reaparece misterioso (nao testado)
 		for (vector<Unidades*>::const_iterator it = mist.begin();
 			it < mist.end(); it++) {
 
 			Sala* sala = SalaRandom(nave);
-			(*it)->setSala(sala);
 			sala->addUnidade(*it);
 		}
 		//desaparece misterioso (nao testado)
-		for (vector<Unidades*>::const_iterator it = mist.begin();
-			it < mist.end(); it++) {
-
-			(*it)->getSala()->removerUnidade((*it)->getID());
-			(*it)->setSala(nullptr);
+		for (vector<Unidades*>::const_iterator it = u.begin();
+			it < u.end(); it++) {
+			if ((*it)->isMisterioso()) {
+				//
+				(*it)->getSala()->removerUnidade((*it)->getID());
+				(*it)->setSala(nullptr);
+			}
 		}
 
 		//Eventos
 		if (!t_turnos || t_turnos == p_evento) {
-			CampoPoCosmico(nave);
+			AtaquePiratas(c, nave);
 			/*switch (rand() % 4)
 			{
 			case 0:
@@ -342,13 +367,14 @@ int main() {
 				break;
 			}*/
 			//evento
-			p_evento = 5 + rand() % 5;
+			p_evento = 10 + rand() % 5;
 		}
 		t_turnos++;
 	}
 	//lipar tudo o que está em memoria dinamica
 	//destrutor da nave
 
+	cout << "Fim";
 	
 	return 0;
 }

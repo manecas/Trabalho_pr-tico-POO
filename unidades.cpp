@@ -11,6 +11,8 @@ using std::vector;
 #include "unidades.h"
 #include "sala.h"
 
+int Unidades::lastID = 0;
+
 Unidades::Unidades(const Unidades& u)
 {
 	ID = u.ID;
@@ -24,7 +26,9 @@ Unidades::Unidades(const Unidades& u)
 
 Unidades::~Unidades() {
 	//quando a unidade é destruida é necessário remove-la da sala!
+	
 	sala->removerUnidade(ID);
+	
 	//std::cout << "Unidade " << nome << " destruida" << endl;
 }
 

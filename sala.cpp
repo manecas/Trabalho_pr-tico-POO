@@ -12,11 +12,15 @@ using std::endl;
 #include "unidades.h"
 
 Sala::~Sala() {
+	
+	unsigned int x, t = tripulacao.size(), i = inimigos.size();
 
-	for (int x = 0; x != unidades.size(); x++)
-		delete unidades[x];
+	for (x = 0; x < t; x++)
+		delete tripulacao[0];
+	for (x = 0; x < i; x++)
+		delete inimigos[0];
 
-	unidades.clear();
+	//std::cout << "DestrutorSala '" << tipo << "'" << std::endl;
 }
 
 void Sala::setIntegridade(int i, bool d) {
@@ -31,6 +35,9 @@ void Sala::setIntegridade(int i, bool d) {
 
 	if (integridade > 100)
 		integridade = 100;
+
+	if (integridade < 0)
+		integridade = 0;
 }
 
 void Sala::setOxigenio(int o, bool d) {
@@ -50,43 +57,73 @@ void Sala::setOxigenio(int o, bool d) {
 		oxigenio = 0;
 }
 
-void Sala::addUnidade(Unidades * u) {
+void Sala::addUnidade(Unidades * u, bool t) {
+	if(t)
+		tripulacao.push_back(u);
+	else
+		inimigos.push_back(u);
 
-	unidades.push_back(u);
-	u->setSala(this); //esquece o *this, this já é um ponteiro
+	u->setSala(this);
 }
 
 void Sala::removerUnidade(int id) {
-	for (int x = 0; x != unidades.size(); x++) {
-		if (unidades[x]->getID() == id) {
-			unidades.erase(unidades.begin() + x);
-			break;
+	unsigned int x;
+
+	for (x = 0; x < tripulacao.size(); x++) {
+		if (tripulacao[x]->getID() == id) {
+			tripulacao.erase(tripulacao.begin() + x);
+			return;
+		}
+	}
+
+	if (x == tripulacao.size()) {
+		for (x = 0; x < inimigos.size(); x++) {
+			if (inimigos[x]->getID() == id) {
+				inimigos.erase(inimigos.begin() + x);
+				return;
+			}
 		}
 	}
 }
 
-void Sala::moverUnidade(string nome, Sala * sala) {
-	int x;
-	for (x = 0; x != unidades.size(); x++) {
-		if (unidades[x]->getNome() == nome)
+void Sala::moverUnidade(int id, Sala * sala) {
+	unsigned int x;
+	for (x = 0; x < tripulacao.size(); x++) {
+		if (tripulacao[x]->getID() == id)
 			break;
 	}
-	sala->addUnidade(unidades[x]);
-	unidades.erase(unidades.begin() + x);
+	if (x < tripulacao.size()) {
+		sala->addUnidade(tripulacao[x]);
+		tripulacao.erase(tripulacao.begin() + x);
+	}
+	else {
+		for (x = 0; x < inimigos.size(); x++) {
+			if (inimigos[x]->getID() == id)
+				break;
+		}
+		if (x < inimigos.size()) {
+			sala->addUnidade(inimigos[x]);
+			inimigos.erase(inimigos.begin() + x);
+		}
+	}
+}
+
+void Sala::getUnidades(vector<Unidades*>& u) const
+{
+	unsigned int x;
+	vector<Unidades*> u1;
+	u = tripulacao;
+
+	for (x = 0; x < inimigos.size(); x++)
+		u.push_back(inimigos[x]);
 }
 
 bool Sala::isOperada() const {
 
-	if (!unidades.size())
-		return false;
+	if (tripulacao.size() != 0 && !inimigos.size())
+		return true;
 
-
-	for (int u = 0; u != unidades.size(); u++) {
-		if (!unidades[u]->isTripulacao())
-			return false;
-	}
-
-	return true;
+	return false;
 }
 
 string Sala::getAsString() const {
@@ -106,19 +143,19 @@ string Sala::getAsString() const {
 Sala & Sala::operator=(const Sala & sala)
 {
 
-	for (int a = 0; a != sala.unidades.size(); a++) {
+	for (int a = 0; a != sala.tripulacao.size(); a++) {
 
-		if (unidades[a]->getNome() == CAPITAO)
-			unidades[a] = new Capitao(sala.unidades[a]);
+		if (tripulacao[a]->getNome() == CAPITAO)
+			tripulacao[a] = new Capitao(sala.tripulacao[a]);
 
-		else if (unidades[a]->getNome() == MEMBRO)
-			unidades[a] = new Membro(sala.unidades[a]);
+		else if (tripulacao[a]->getNome() == MEMBRO)
+			tripulacao[a] = new Membro(sala.tripulacao[a]);
 
-		else if (unidades[a]->getNome() == ROBOT)
-			unidades[a] = new Robot(sala.unidades[a]);
+		else if (tripulacao[a]->getNome() == ROBOT)
+			tripulacao[a] = new Robot(sala.tripulacao[a]);
 		//completar para todas
 
-		unidades[a]->setSala(this);
+		tripulacao[a]->setSala(this);
 	}
 
 	return *this;
