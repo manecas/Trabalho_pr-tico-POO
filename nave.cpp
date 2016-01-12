@@ -9,10 +9,8 @@ using std::string;
 #include "unidades.h"
 #include "nave.h"
 
-Nave::Nave(string n, int dificuldade) : nome(n)
+Nave::Nave()
 {
-	distPercorrer = 4000 + 1000 * dificuldade;
-
 	for (int l = 0; l < 3; l++) {
 		for (int c = 0; c < 5; c++) {
 			salas[l][c] = nullptr;
@@ -31,10 +29,34 @@ Nave::Nave(string n, int dificuldade) : nome(n)
 Nave::~Nave()
 {
 	for (int l = 0; l < 3; l++) {
-		for (int c = 0; c < 5; c++) {
-			delete salas[l][c];
-		}
-	}
+	for (int c = 0; c < 5; c++) {
+
+		if (salas[l][c] == nullptr) continue;
+		//std::cout << salas[l][c]->getAsString();
+
+		delete salas[l][c];
+	} }
+	/*delete salas[0][0];
+	delete salas[0][1];
+	delete salas[0][2];
+	delete salas[0][3];
+
+	delete salas[1][1];
+	delete salas[1][2];
+	delete salas[1][3];
+	delete salas[1][4];
+
+	delete salas[2][0];
+	delete salas[2][1];
+	delete salas[2][2];
+	delete salas[2][3];*/
+	//std::cout << "DestrutorNave" << std::endl;
+}
+
+void Nave::config(string n, int dificuldade)
+{
+	distPercorrer = 100;//4000 + 1000 * dificuldade;
+	nome = n;
 }
 
 void Nave::updateDistPercorrer() {
@@ -54,57 +76,60 @@ void Nave::updateDistPercorrer() {
 	distPercorrer -= total;
 }
 
-void Nave::getUnidades(int x, int y, vector<Unidades*>& u) const {
+void Nave::getAllTripulacao(vector<Unidades*>& u) const
+{
+	vector<Unidades*> u1;
+	unsigned int x = 0;
 
-	salas[x][y]->getUnidades(u);
+	for (int l = 0; l < 3; l++) {
+	for (int c = 0; c < 5; c++) {
+		if (salas[l][c] == nullptr) continue;
+
+		salas[l][c]->getTripulacao(u1);
+
+		for (x = 0; x < u1.size(); x++)
+			u.push_back(u1[x]);
+
+	} }
 }
 
-void Nave::getAllUnidades(vector<Unidades*>& u, bool d) const {
+void Nave::getAllInimigos(vector<Unidades*>& u) const
+{
+	vector<Unidades*> u1;
+	unsigned int x = 0;
+
+	for (int l = 0; l < 3; l++) {
+	for (int c = 0; c < 5; c++) {
+		if (salas[l][c] == nullptr) continue;
+
+		salas[l][c]->getInimigos(u1);
+
+		for (x = 0; x < u1.size(); x++)
+			u.push_back(u1[x]);
+
+	} }
+}
+
+void Nave::getAllUnidades(vector<Unidades*>& u) const {
 
 	vector<Unidades*> u1;
-	for (int l = 0; l < 3; l++) {
-	for (int c = 0; c < 5; c++) {
-		//
-		if (salas[l][c] == nullptr)
-			continue;
-		//
-		salas[l][c]->getUnidades(u1);
-		if (!u1.size())
-			continue;
-		//
-		for (int x = 0; x != u1.size(); x++)
-			if(!d)
-			u.push_back(u1[x]);
-			else {
-				if(u1[x]->isTripulacao())
-					u.push_back(u1[x]);
-			}
-		//
-	} }
-}
-
-int Nave::getTotalUnidades() const {
-
-	int total = 0;
-	vector<Unidades*> u;
+	unsigned int x = 0;
 
 	for (int l = 0; l < 3; l++) {
 	for (int c = 0; c < 5; c++) {
-		//
 		if (salas[l][c] == nullptr) continue;
-		//
-		salas[l][c]->getUnidades(u);
-		total += u.size();
+
+		salas[l][c]->getTripulacao(u1);
+
+		for (x = 0; x < u1.size(); x++)
+			u.push_back(u1[x]);
+
+		salas[l][c]->getInimigos(u1);
+
+		for (x = 0; x < u1.size(); x++)
+			u.push_back(u1[x]);
+
 	} }
-
-	/*Sala *s;
-	s = **salas;
-
-	for (; s < **salas + sizeof(**salas); s++) {
-		s->getUnidades(u);
-		total += u.size();
-	}*/
-	return total;
 }
 
 Sala * Nave::getSala(int x, int y) const {

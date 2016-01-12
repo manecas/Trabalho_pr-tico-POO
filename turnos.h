@@ -13,7 +13,7 @@ void ftTripulacao(Nave& nave);
 
 Sala *SalaRandom(Nave& nave);
 void ChuvaMeteroritos(Nave& nave);
-void AtaquePiratas(Nave& nave);
+void AtaquePiratas(Consola& c, Nave& nave);
 void AtaqueXenomorfo(Nave& nave);
 void CampoPoCosmico(Nave& nave);
 

@@ -80,7 +80,7 @@ class Membro : public Unidades {
 public:
 	Membro() : Unidades(MEMBRO, 5) { }
 	Membro(Unidades* u) : Unidades(*u) { }
-	~Membro() { Unidades::~Unidades(); }
+	~Membro() { }
 	int isRespira()					{ return 1; }
 	int isReparador()				{ return 2; }
 	int isCombatente()				{ return 1; }
@@ -92,7 +92,7 @@ class Robot : public Unidades {
 public:
 	Robot() : Unidades(ROBOT, 8) { }
 	Robot(Unidades* u) : Unidades(*u) { }
-	~Robot() { Unidades::~Unidades(); }
+	~Robot() { }
 	int isExoesqueleto()			{ return 1; }
 	int isCombatente()				{ return 2; }
 	int isTripulacao()				{ return 1; }
@@ -104,10 +104,10 @@ class Pirata : public Unidades {
 public:
 	Pirata() : Unidades(PIRATA, 4) { }
 	Pirata(Unidades* u) : Unidades(*u) { }
-	~Pirata() { Unidades::~Unidades(); }
+	~Pirata() { }
 	int isRespira()					{ return 1; }
 	int* isInimigo();
-	int isMove()					{ return 15; }
+	int isMove()					{ return 0; }
 };
 
 //xenomorfos
@@ -115,26 +115,26 @@ public:
 class Geigermorfo : public Unidades {
 public:
 	Geigermorfo() : Unidades(GEIGERMORFO, 4) { }
-	~Geigermorfo() { Unidades::~Unidades(); }
+	~Geigermorfo() { }
 };
 
 class Casulo : public Unidades {
 public:
 	Casulo() : Unidades(CASULO, 6) { }
-	~Casulo() { Unidades::~Unidades(); }
+	~Casulo() { }
 };
 
 class Blob : public Unidades {
 public:
 	Blob() : Unidades(BLOB, 8) { }
-	~Blob() { Unidades::~Unidades(); }
+	~Blob() { }
 };
 
 class Mxy : public Unidades {
 public:
 	Mxy() : Unidades(MXY, 8) { }
 	Mxy(Unidades* u) : Unidades(*u) { }
-	~Mxy() { Unidades::~Unidades(); }
+	~Mxy() { }
 	virtual int isRespira() { return 1; }
 	virtual int isMutatis() { return 10; }
 	virtual int isHipnotizador() { return 15; }

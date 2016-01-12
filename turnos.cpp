@@ -58,7 +58,7 @@ void inicioTurno(Nave& nave) {
 					}
 				} while (novaSala == nullptr);
 				//
-				sala->moverUnidade(u[x]->getNome(), novaSala);
+				sala->moverUnidade(u[x]->getID(), novaSala);
 			}
 		}
 
@@ -113,7 +113,7 @@ void inicioTurno(Nave& nave) {
 			if (rand() % 100 < tmpVal) {
 				
 				vector<Unidades*> uS;
-				u[x]->getSala()->getUnidades(uS);
+				u[x]->getSala()->getTripulacao(uS);
 				int r = rand() % uS.size();
 
 				uS[r]->setIndeciso(true);
@@ -128,7 +128,7 @@ void faseDeOrdens(Consola& consola, Nave& nave) {
 	bool* ignorouOrdem;
 	Sala* sala;
 
-	nave.getAllUnidades(u);
+	nave.getAllTripulacao(u);
 	ignorouOrdem = new bool[u.size()];
 	for (int x = 0; x < (int)u.size(); x++)
 		ignorouOrdem[x] = false;
@@ -187,8 +187,8 @@ void faseDeOrdens(Consola& consola, Nave& nave) {
 			if (nomeUnidade[0] > '0' && nomeUnidade[0] < '9') {
 				int s;
 				int IDunidades = stoi(nomeUnidade);
-				u.clear();
-				nave.getAllUnidades(u);
+				//u.clear();
+				//nave.getAllTripulacao(u);
 				for (s = 0; s != u.size(); s++) {
 					if (IDunidades == u[s]->getID()) {
 						encontrou = u[s];
@@ -197,8 +197,8 @@ void faseDeOrdens(Consola& consola, Nave& nave) {
 				}
 			}
 			else {
-				u.clear();
-				nave.getAllUnidades(u);
+				//u.clear();
+				//nave.getAllTripulacao(u);
 				for (int s = 0; s != u.size(); s++) {
 					if ((nomeUnidade == "c" || nomeUnidade == "C")
 						&& u[s]->getNome() == CAPITAO) {
@@ -243,7 +243,7 @@ void faseDeOrdens(Consola& consola, Nave& nave) {
 					if (encontrou->isIndeciso() && !ignorouOrdem[encontrou->getID()] && rand() % 100 < 50)
 						ignorouOrdem[encontrou->getID()] = true;
 					else
-						encontrou->getSala()->moverUnidade(encontrou->getNome(), sala);
+						encontrou->getSala()->moverUnidade(encontrou->getID(), sala);
 				}
 				else {
 					send = new string[1];
@@ -324,18 +324,14 @@ void ftSalas(Nave& nave) {
 	} }
 	sala = nave.getSalaByTipo(ENFERMARIA);
 	if (sala->getIntegridade() == 100) {
-		sala->getUnidades(u);
-		for (int x = 0; x != u.size(); x++) {
-			if (u[x]->isTripulacao())
-				u[x]->setPV(1);
-		}
+		sala->getTripulacao(u);
+		for (int x = 0; x != u.size(); x++)
+			u[x]->setPV(1);
 	}
 	if((sala = nave.getSalaByTipo(SALAARMAS)) != nullptr) {
-		sala->getUnidades(u);
-		for (int x = 0; x != u.size(); x++) {
-			if (u[x]->isTripulacao())
-				u[x]->setArmado(1);
-		}
+		sala->getTripulacao(u);
+		for (int x = 0; x != u.size(); x++)
+			u[x]->setArmado(1);
 	}
 
 
@@ -361,6 +357,7 @@ void ftInimigos(Nave& nave) {
 		//
 		if ((sala = nave.getSala(l, c)) == nullptr) continue;
 		u.clear();
+		//
 		sala->getUnidades(u);
 		//
 		for (int x = 0; x != u.size(); x++) {
@@ -389,11 +386,10 @@ void ftInimigos(Nave& nave) {
 				if (sala->getTipo() == CONTROLO_ESCUDO
 					&& sala->getIntegridade() > 97) {
 					//
-					Escudo* e = (Escudo*)sala;
-					e->setEscudo(false);
+					sala->setEscudo(false);
 				}
 			}
-			delete d;
+			delete []d;
 		}
 	} }
 }
@@ -419,12 +415,15 @@ void ftTripulacao(Nave& nave) {
 		//
 		if ((sala = nave.getSala(l, c)) == nullptr) continue;
 		u.clear();
-		sala->getUnidades(u);
 		//
-		for (int x = 0; x != u.size(); x++) {
-			if (u[x]->isTripulacao())	tripulacao[l][c].push_back(u[x]);
-			else						inimigos[l][c].push_back(u[x]);
-		}
+		sala->getTripulacao(u);
+		for (int x = 0; x != u.size(); x++)
+			tripulacao[l][c].push_back(u[x]);
+		//
+		sala->getInimigos(u);
+		for (int x = 0; x != u.size(); x++)
+			inimigos[l][c].push_back(u[x]);
+		//
 	} }
 	//cruzar informacao
 	for (int l = 0; l < 3; l++) {
@@ -454,8 +453,7 @@ void ftTripulacao(Nave& nave) {
 				if (sala->getTipo() == CONTROLO_ESCUDO
 					&& sala->getIntegridade() == 100) {
 					//
-					Escudo* e = (Escudo*)sala;
-					e->setEscudo(true);
+					sala->setEscudo(true);
 				}
 			}
 		}
@@ -491,9 +489,8 @@ void ChuvaMeteroritos(Nave& nave) {
 	}
 
 	sala = nave.getSalaByTipo(CONTROLO_ESCUDO);
-	Escudo *e = (Escudo*)sala;
 
-	if (e->getForca() > 0) { //escudo ativo
+	if (sala->getForca() > 0) { //escudo ativo
 
 		sala->setIntegridade(sala->getIntegridade() - 10 * N_meteoritos);
 	}
@@ -504,25 +501,26 @@ void ChuvaMeteroritos(Nave& nave) {
 		tmpSala->setBrecha(true);
 	}
 }
-void AtaquePiratas(Nave& nave) {
+void AtaquePiratas(Consola& c, Nave& nave) {
 
 	Sala* sala;
-	Escudo *e;
 	int danoPiratas;
+	string* send;
 
-	cout << "Voce esta a ser atacado por piratas!" << endl;
+	send = new string[1];
+	send[0] = "Voce esta a ser atacado por piratas!";
+	atualizarOutput(c, send);
 
 	sala = nave.getSalaByTipo(CONTROLO_ESCUDO);
-	e = (Escudo*)sala;
 	danoPiratas = 30 + rand() % 30;
-	if (danoPiratas - e->getForca() > 0) {
+	if ((danoPiratas - sala->getForca()) > 0) {
 		//se o escudo resistir ao ataque, só perde forca
-		e->setForca(-danoPiratas);
+		sala->setForca(-danoPiratas);
 	}
 	else {
 		//se a forca de escudo nao for suficiente para resistir ao ataque
 		//perde o excudo e causa um problema numa sala aleatoria
-		e->setForca(-danoPiratas);
+		sala->setForca(-danoPiratas);
 		sala = SalaRandom(nave);
 		switch (rand() % 3) {
 		case 0:
@@ -540,9 +538,10 @@ void AtaquePiratas(Nave& nave) {
 		//se nao houver uma sala raio laser, os piratas entram na nave
 		sala = SalaRandom(nave);
 		int p = 0;
-		while (p++ < 3 + rand() % 3) {
+		int x = 3 + rand() % 3;
+		while (p++ < x) {
 			Unidades* pirata = new Pirata;
-			sala->addUnidade(pirata);
+			sala->addUnidade(pirata, false);
 		}
 	}
 }
