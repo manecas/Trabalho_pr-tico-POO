@@ -7,6 +7,7 @@ using std::endl;
 using std::vector;
 using std::string;
 
+#include "caract.h"
 #include "consola.h"
 #include "unidades.h"
 #include "sala.h"

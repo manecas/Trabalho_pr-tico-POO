@@ -5,6 +5,7 @@
 using std::vector;
 using std::string;
 
+#include "caract.h"
 #include "sala.h"
 #include "unidades.h"
 #include "nave.h"
@@ -32,24 +33,10 @@ Nave::~Nave()
 	for (int c = 0; c < 5; c++) {
 
 		if (salas[l][c] == nullptr) continue;
-		//std::cout << salas[l][c]->getAsString();
 
 		delete salas[l][c];
 	} }
-	/*delete salas[0][0];
-	delete salas[0][1];
-	delete salas[0][2];
-	delete salas[0][3];
 
-	delete salas[1][1];
-	delete salas[1][2];
-	delete salas[1][3];
-	delete salas[1][4];
-
-	delete salas[2][0];
-	delete salas[2][1];
-	delete salas[2][2];
-	delete salas[2][3];*/
 	//std::cout << "DestrutorNave" << std::endl;
 }
 

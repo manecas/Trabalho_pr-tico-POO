@@ -12,6 +12,7 @@ using std::string;
 using std::vector;
 using std::ostringstream;
 
+#include "caract.h"
 #include "consola.h"
 #include "sala.h"
 #include "unidades.h"
@@ -28,12 +29,18 @@ void inicioTurno(Nave& nave) {
 	for (int x = 0; x != u.size(); x++) {
 		//
 		sala = u[x]->getSala();
-		if (u[x]->isRespira()) { //repirar
+		//se for misterioso e nao estiver em nehuma sala
+		//a sala é nullptr
+		if (sala == nullptr) continue;
+
+		u[x]->inicioTurno();
+
+		/*if (u[x]->isRespira()) { //repirar
 			if (sala->getOxigenio() > 0)
 				sala->setOxigenio(-1);
 			else
 				u[x]->setPV(-1);
-		}
+		}*/
 		//
 		if (u[x]->isFlamejante()) //flamejantes
 			u[x]->getSala()->setOxigenio(-5);
@@ -58,7 +65,7 @@ void inicioTurno(Nave& nave) {
 					}
 				} while (novaSala == nullptr);
 				//
-				sala->moverUnidade(u[x]->getID(), novaSala);
+				u[x]->mover(novaSala);
 			}
 		}
 
@@ -243,7 +250,7 @@ void faseDeOrdens(Consola& consola, Nave& nave) {
 					if (encontrou->isIndeciso() && !ignorouOrdem[encontrou->getID()] && rand() % 100 < 50)
 						ignorouOrdem[encontrou->getID()] = true;
 					else
-						encontrou->getSala()->moverUnidade(encontrou->getID(), sala);
+						encontrou->mover(sala);
 				}
 				else {
 					send = new string[1];
@@ -541,7 +548,7 @@ void AtaquePiratas(Consola& c, Nave& nave) {
 		int x = 3 + rand() % 3;
 		while (p++ < x) {
 			Unidades* pirata = new Pirata;
-			sala->addUnidade(pirata, false);
+			pirata->mover(sala);
 		}
 	}
 }

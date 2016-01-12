@@ -8,6 +8,7 @@ using std::ostringstream;
 using std::endl;
 using std::vector;
 
+#include "caract.h"
 #include "unidades.h"
 #include "sala.h"
 
@@ -22,14 +23,6 @@ Unidades::Unidades(const Unidades& u)
 	indeciso = u.indeciso;
 	sala = u.sala;
 	nome = u.nome;
-}
-
-Unidades::~Unidades() {
-	//quando a unidade é destruida é necessário remove-la da sala!
-	
-	sala->removerUnidade(ID);
-	
-	//std::cout << "Unidade " << nome << " destruida" << endl;
 }
 
 void Unidades::setPV(int pv, bool d) {
@@ -47,16 +40,15 @@ void Unidades::setPV(int pv, bool d) {
 		delete this;
 }
 
-void Unidades::setSala(Sala* s, bool force) {
-	//a condicao "s != nullptr" era para proteger de forma a nao colocar
-	//unidades em salas invalidas, no entanto, uma vez que existem
-	//os misteriosos vamos precisas de ocultar essas unidades
-	//para isso adicionei o parametro "force", caso "force" seja verdadeiro
-	//a unidade vai para a sala, mesmo sendo invalida e assim é mais
-	//facil de atualizar a lista de unidades nas salas
-	if(s != nullptr && !force || force)
-		sala = s;
+void Unidades::mover(Sala* s) {
 
+	if (sala != nullptr)
+		sala->removerUnidade(ID);
+
+	sala = s;
+
+	if(sala != nullptr)
+		sala->addUnidade(this);
 }
 
 string Unidades::getAsString() const {

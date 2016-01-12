@@ -8,17 +8,20 @@ using std::string;
 using std::ostringstream;
 using std::endl;
 
+#include "caract.h"
 #include "sala.h"
 #include "unidades.h"
 
 Sala::~Sala() {
-	
-	unsigned int x, t = tripulacao.size(), i = inimigos.size();
 
-	for (x = 0; x < t; x++)
-		delete tripulacao[0];
-	for (x = 0; x < i; x++)
-		delete inimigos[0];
+	for (Unidades* obj : tripulacao)
+		delete obj;
+
+	for (Unidades* obj : inimigos)
+		delete obj;
+
+	tripulacao.clear();
+	inimigos.clear();
 
 	//std::cout << "DestrutorSala '" << tipo << "'" << std::endl;
 }
@@ -57,13 +60,11 @@ void Sala::setOxigenio(int o, bool d) {
 		oxigenio = 0;
 }
 
-void Sala::addUnidade(Unidades * u, bool t) {
-	if(t)
+void Sala::addUnidade(Unidades * u) {
+	if(u->isTripulacao())
 		tripulacao.push_back(u);
 	else
 		inimigos.push_back(u);
-
-	u->setSala(this);
 }
 
 void Sala::removerUnidade(int id) {
@@ -86,7 +87,7 @@ void Sala::removerUnidade(int id) {
 	}
 }
 
-void Sala::moverUnidade(int id, Sala * sala) {
+/*void Sala::moverUnidade(int id, Sala * sala) {
 	unsigned int x;
 	for (x = 0; x < tripulacao.size(); x++) {
 		if (tripulacao[x]->getID() == id)
@@ -106,7 +107,7 @@ void Sala::moverUnidade(int id, Sala * sala) {
 			inimigos.erase(inimigos.begin() + x);
 		}
 	}
-}
+}*/
 
 void Sala::getUnidades(vector<Unidades*>& u) const
 {
@@ -153,10 +154,10 @@ Sala & Sala::operator=(const Sala & sala)
 
 		else if (tripulacao[a]->getNome() == ROBOT)
 			tripulacao[a] = new Robot(sala.tripulacao[a]);
-		//completar para todas
 
-		tripulacao[a]->setSala(this);
+		tripulacao[a]->mover(this);
 	}
+	//fazer o mesmo para inimigos
 
 	return *this;
 }
